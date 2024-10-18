@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #1f2937;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3b82f6;
+        }
+
+        .switch-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .switch-btns button {
+            width: 48%;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: green;
+            font-size: 16px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* Additional Signup Fields */
+        .signup-fields {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="form-title">Login</h1>
+
+    <!-- Login/Signup Form -->
+    <form id="auth-form">
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+
+        <!-- Additional fields for Sign Up -->
+        <div class="signup-fields" id="signup-fields">
+            <input type="text" id="name" placeholder="Name"><br>
+            <input type="text" id="course" placeholder="Course"><br>
+            <input type="text" id="idNumber" placeholder="ID Number"><br>
+        </div>
+
+        <button type="submit" id="submit-btn">Login</button>
+        <div class="message" id="form-message"></div>
+    </form>
+
+    <!-- Switch between Login/Signup -->
+    <div class="switch-btns">
+        <button id="login-btn">Login</button>
+        <button id="signup-btn">Sign Up</button>
+    </div>
+</div>
+
+<script>
+    const formTitle = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const formMessage = document.getElementById('form-message');
+    const authForm = document.getElementById('auth-form');
+    const signupFields = document.getElementById('signup-fields');
+
+    // Form Toggle Buttons
+    const loginBtn = document.getElementById('login-btn');
+    const signupBtn = document.getElementById('signup-btn');
+
+    // Switch to Login View
+    loginBtn.addEventListener('click', () => {
+        formTitle.textContent = "Login";
+        submitBtn.textContent = "Login";
+        signupFields.style.display = "none";
+        formMessage.textContent = "";
+    });
+
+    // Switch to Signup View
+    signupBtn.addEventListener('click', () => {
+        formTitle.textContent = "Sign Up";
+        submitBtn.textContent = "Sign Up";
+        signupFields.style.display = "block";
+        formMessage.textContent = "";
+    });
+
+    // Form Submission Handling
+    authForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (username === "" || password === "") {
+            formMessage.textContent = "Please fill out all fields.";
+            formMessage.classList.add('error');
+            return;
+        }
+
+        formMessage.classList.remove('error');
+
+        if (submitBtn.textContent === "Login") {
+            // Mock Login Action
+            const storedUser = JSON.parse(localStorage.getItem(username));
+
+            if (storedUser && storedUser.password === password) {
+                formMessage.textContent = "Login successful!";
+                formMessage.classList.remove('error');
+
+                // Redirect to Dashboard
+                setTimeout(() => {
+                    window.location.href = "main.html";
+                }, 1000);
+            } else {
+                formMessage.textContent = "Incorrect username or password.";
+                formMessage.classList.add('error');
+            }
+        } else if (submitBtn.textContent === "Sign Up") {
+            // Get Sign Up fields
+            const name = document.getElementById('name').value;
+            const course = document.getElementById('course').value;
+            const idNumber = document.getElementById('idNumber').value;
+
+            if (name === "" || course === "" || idNumber === "") {
+                formMessage.textContent = "Please fill out all sign-up fields.";
+                formMessage.classList.add('error');
+                return;
+            }
+
+            // Store user data in localStorage
+            const userData = {
+                username: username,
+                password: password,
+                name: name,
+                course: course,
+                idNumber: idNumber
+            };
+
+            localStorage.setItem(username, JSON.stringify(userData));
+
+            formMessage.textContent = `Sign Up successful! Welcome, ${name}!`;
+
+            // Redirect to Dashboard
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 1000);
+        }
+    });
+</script>
+
+</body>
+</html>
