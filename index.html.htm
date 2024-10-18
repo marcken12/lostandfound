@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+
+        #report-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        /* Sidebar (Menu Drawer) */
+        .drawer {
+            width: 250px;
+            height: 100%;
+            background-color: #1f2937;
+            color: white;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            transition: left 0.3s ease;
+            padding-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .drawer .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .drawer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .drawer ul li {
+            margin: 20px 0;
+        }
+
+        .drawer ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .drawer ul li a:hover,
+        .drawer ul li a.active {
+            background-color: #3b82f6;
+            border-radius: 5px;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 0;
+            padding: 20px;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1f2937;
+        }
+
+        /* Toggle Button */
+        .toggle-btn {
+            background-color: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+
+        .toggle-btn:hover {
+            background-color: #3b82f6;
+        }
+
+        /* Card Style */
+        .content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .card p {
+            font-size: 24px;
+            color: #3b82f6;
+        }
+
+        /* Open Menu Drawer */
+        .open-drawer {
+            left: 0;
+        }
+
+        .move-right {
+            margin-left: 250px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Sidebar / Drawer -->
+    <nav id="menu-drawer" class="drawer">
+        <div class="logo">
+            <h2>Lost and Found System</h2>
+        </div>
+        <ul>
+            <li><a href="#" class="active">Dashboard</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="module.html">Lost Item Scanner</a></li>
+            <li><a href="generator.html">QR Registration</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="signup.html">Logout</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <section id="main-content" class="main">
+        <header class="header">
+            <button id="toggle-btn" class="toggle-btn">☰</button>
+            <h1>Dashboard Overview</h1>
+        </header>
+
+        <div class="content">
+            <div class="card">
+                <h3>Total Users</h3>
+                <p>18,457</p>
+            </div>
+            <div class="card">
+                <h3>New Signups</h3>
+                <p>123</p>
+            </div>
+            <div class="card">
+                <h3>Active Users</h3>
+                <p>12,345</p>
+            </div>
+            <div class="card">
+                <h3>Performance</h3>
+                <p>89%</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="report-popup" style="display:none;">
+        <div class="popup-container">
+            <h2>Submitted Report</h2>
+            <div id="report-details"></div>
+            <button id="close-popup">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggle-btn');
+        const menuDrawer = document.getElementById('menu-drawer');
+        const mainContent = document.getElementById('main-content');
+
+        // Toggle drawer open/close
+        toggleBtn.addEventListener('click', () => {
+            menuDrawer.classList.toggle('open-drawer');
+            mainContent.classList.toggle('move-right');
+        });
+
+        window.onload = function() {
+            const reportData = JSON.parse(localStorage.getItem('reportData'));
+            if (reportData) {
+                const reportDetails = `
+                    <p><strong>Time:</strong> ${reportData.time}</p>
+                    <p><strong>Item Description:</strong> ${reportData.itemDescription}</p>
+                    <p><strong>Location:</strong> ${reportData.location}</p>
+                    <p><strong>Name:</strong> ${reportData.name}</p>
+                    <p><strong>ID:</strong> ${reportData.id}</p>
+                `;
+                document.getElementById('report-details').innerHTML = reportDetails;
+                document.getElementById('report-popup').style.display = 'flex';
+
+                // Clear the data after displaying
+                localStorage.removeItem('reportData');
+            }
+        };
+
+        // Close popup event
+        document.getElementById('close-popup')?.addEventListener('click', function () {
+            document.getElementById('report-popup').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
