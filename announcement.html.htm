@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcement Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Announcement Form</h1>
+        <form id="announcementForm">
+            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
+            <button type="submit">Announce</button>
+        </form>
+
+        <!-- Link back to the main page -->
+        <a href="main.html" class="back-link">Go back to Main</a>
+    </div>
+
+    <script>
+        document.getElementById('announcementForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const founderName = document.getElementById('founderName').value;
+            const foundTime = document.getElementById('foundTime').value;
+            const foundLocation = document.getElementById('foundLocation').value;
+
+            // Create announcement message
+            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
+            localStorage.setItem('announcement', announcement);
+
+            // Optionally clear the form after submission
+            document.getElementById('announcementForm').reset();
+
+            // Notify the user about the announcement
+            alert('Announcement has been made!');
+        });
+    </script>
+</body>
+</html>
