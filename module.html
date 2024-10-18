@@ -179,7 +179,7 @@
         }
 
         let htmlscanner = new Html5Qrcode("my-qr-reader");
-        htmlscanner.start({ facingMode: "environment" }, { fps: 45, qrbox: 300}, onScanSuccess)
+        htmlscanner.start({ facingMode: "environment" }, { fps: 30, qrbox: 300}, onScanSuccess)
             .catch(err => console.error(err));
 
         // Close popup button
