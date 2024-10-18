@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #qrCode {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <form id="qrForm">
+            <input type="text" id="fullName" placeholder="Full Name" required>
+            <input type="text" id="course" placeholder="Course" required>
+            <input type="text" id="idNumber" placeholder="ID Number" required>
+            <button type="submit">Generate QR Code</button>
+        </form>
+        <div id="qrCode"></div>
+        <button id="downloadJpeg" style="display:none;">Download JPEG</button>
+        <button id="downloadPdf" style="display:none;">Download PDF</button>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.getElementById('qrForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const course = document.getElementById('course').value;
+            const idNumber = document.getElementById('idNumber').value;
+            const qrCodeDiv = document.getElementById('qrCode');
+
+            // Clear previous QR codes
+            qrCodeDiv.innerHTML = '';
+
+            // Combine data into a single string for the QR code
+            const qrData = `Name: ${fullName}, Course: ${course}, ID: ${idNumber}`;
+
+            // Generate QR code
+            $(qrCodeDiv).qrcode({
+                width: 128,
+                height: 128,
+                text: qrData
+            });
+
+            // Show download buttons
+            document.getElementById('downloadJpeg').style.display = 'block';
+            document.getElementById('downloadPdf').style.display = 'block';
+
+            // Set up download buttons
+            document.getElementById('downloadJpeg').onclick = function() {
+                const canvas = qrCodeDiv.querySelector('canvas');
+                const jpegURL = canvas.toDataURL('image/jpeg');
+                const link = document.createElement('a');
+                link.href = jpegURL;
+                link.download = 'qrcode.jpeg';
+                link.click();
+            };
+
+            document.getElementById('downloadPdf').onclick = function() {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const canvas = qrCodeDiv.querySelector('canvas');
+                const imgData = canvas.toDataURL('image/jpeg');
+                
+                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 180);
+                pdf.save('qrcode.pdf');
+            };
+        });
+    </script>
+</body>
+</html>
