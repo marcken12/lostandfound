@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            box-sizing: border-box;
+            text-align: center;
+            background: rgb(128 0 0 / 66%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 5px;
+        }
+
+        .container h1 {
+            color: #ffffff;
+        }
+
+        .section {
+            background-color: #ffffff;
+            padding: 50px 30px;
+            border: 1.5px solid #b2b2b2;
+            border-radius: 0.25em;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        #my-qr-reader {
+            padding: 20px !important;
+            border: 1.5px solid #b2b2b2 !important;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 1px solid #b2b2b2;
+            border-radius: 0.25em;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            background-color: #008000ad;
+            transition: 0.3s background-color;
+        }
+
+        button:hover {
+            background-color: #008000;
+        }
+
+        #form-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .popup-container label,
+        .popup-container input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .popup-container input {
+            padding: 10px;
+            border: 1px solid #b2b2b2;
+            border-radius: 4px;
+        }
+
+        .popup-container button {
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .popup-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.3s background-color;
+        }
+
+        .link-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scan QR Codes</h1>
+        <div class="section">
+            <div id="my-qr-reader"></div>
+        </div>
+        <button id="try-again-button" style="display: none;">Try Again</button>
+        <button id="submit-button" style="display: none;">Fill Up Form to Submit Report</button>
+    </div>
+
+    <!-- Form Popup -->
+    <div id="form-popup">
+        <div class="popup-container">
+            <form id="report-form">
+                <label for="scanned-data">Scanned Data:</label>
+                <input type="text" id="scanned-data" readonly>
+                <label for="time">Time:</label>
+                <input type="text" id="time" required>
+                <label for="item-description">Item Description:</label>
+                <input type="text" id="item-description" required>
+                <label for="location">Location:</label>
+                <input type="text" id="location" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+                <label for="id">ID:</label>
+                <input type="text" id="id" required>
+                <button type="submit">Submit</button>
+            </form>
+            <button id="close-popup">Close</button>
+        </div>
+    </div>
+
+    <!-- Back to Main Page Button -->
+    <a href="main.html" class="link-button">Back to Main Page</a>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        function onScanSuccess(decodeText) {
+            alert("Your QR code is: " + decodeText);
+            document.getElementById('submit-button').style.display = 'block';
+            document.getElementById('try-again-button').style.display = 'block';
+
+            // Store scanned data in the form's hidden input
+            document.getElementById('scanned-data').value = decodeText;
+
+            // Automatically show the form after scanning
+            document.getElementById('form-popup').style.display = 'flex';
+        }
+
+        let htmlscanner = new Html5Qrcode("my-qr-reader");
+        htmlscanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess)
+            .catch(err => console.error(err));
+
+        // Close popup button
+        document.getElementById('close-popup').addEventListener('click', function () {
+            document.getElementById('form-popup').style.display = 'none';
+        });
+
+        // Form submission
+        document.getElementById('report-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = {
+                scannedData: document.getElementById('scanned-data').value,
+                time: document.getElementById('time').value,
+                itemDescription: document.getElementById('item-description').value,
+                location: document.getElementById('location').value,
+                name: document.getElementById('name').value,
+                id: document.getElementById('id').value,
+            };
+
+            // Store data in localStorage
+            localStorage.setItem('reportData', JSON.stringify(formData));
+
+            // Optionally show confirmation and close form
+            alert("Report submitted successfully!");
+            document.getElementById('form-popup').style.display = 'none';
+        });
+
+        // Try Again button functionality to reset QR reader
+        document.getElementById('try-again-button').addEventListener('click', function () {
+            document.getElementById('form-popup').style.display = 'none';
+            document.getElementById('submit-button').style.display = 'none';
+            document.getElementById('try-again-button').style.display = 'none';
+            htmlscanner.stop();
+            htmlscanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess)
+                .catch(err => console.error(err));
+        });
+    </script>
+</body>
+</html>
