@@ -121,7 +121,7 @@
 <script type="module">
   // Import the necessary functions from the Firebase SDK
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
 
   // Firebase configuration
@@ -218,6 +218,17 @@
       const errorMessage = error.message;
       formMessage.textContent = `Error: ${errorMessage}`;
       formMessage.classList.add('error');
+    }
+  });
+
+  // Listen to the auth state change
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, maybe you want to check if they are in the main page or redirect elsewhere
+      console.log("User signed in: ", user);
+    } else {
+      // User is signed out
+      console.log("No user signed in");
     }
   });
 </script>
