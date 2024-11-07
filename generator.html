@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <title>Announcement Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +13,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f5f5f5;
+            background-color: rgb(128 0 0 / 66%);
         }
 
         .container {
@@ -44,73 +44,68 @@
             background-color: #0056b3;
         }
 
-        #qrCode {
-            margin: 20px 0;
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>QR Code Generator</h1>
-        <form id="qrForm">
-            <input type="text" id="fullName" placeholder="Full Name" required>
-            <input type="text" id="course" placeholder="Course" required>
-            <input type="text" id="idNumber" placeholder="ID Number" required>
-            <button type="submit">Generate QR Code</button>
+        <h1>Announcement Form</h1>
+        <form id="announcementForm">
+            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
+            <button type="submit">Announce</button>
         </form>
-        <div id="qrCode"></div>
-        <button id="downloadJpeg" style="display:none;">Download JPEG</button>
-        <button id="downloadPdf" style="display:none;">Download PDF</button>
+
+        <!-- Link back to the main page -->
+        <a href="main.html" class="back-link">Go back to Main</a>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        document.getElementById('qrForm').addEventListener('submit', function(event) {
+
+    <!-- Include EmailJS SDK -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your user ID (replace with your own)
+        emailjs.init("L9XK5kdKc8yHK48VM");
+
+        document.getElementById("announcementForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            
-            const fullName = document.getElementById('fullName').value;
-            const course = document.getElementById('course').value;
-            const idNumber = document.getElementById('idNumber').value;
-            const qrCodeDiv = document.getElementById('qrCode');
 
-            // Clear previous QR codes
-            qrCodeDiv.innerHTML = '';
+            const founderName = document.getElementById("founderName").value;
+            const foundTime = document.getElementById("foundTime").value;
+            const foundLocation = document.getElementById("foundLocation").value;
 
-            // Combine data into a single string for the QR code
-            const qrData = `Name: ${fullName}, Course: ${course}, ID: ${idNumber}`;
+            // Combine form data into the email message
+            const message = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
 
-            // Generate QR code
-            $(qrCodeDiv).qrcode({
-                width: 128,
-                height: 128,
-                text: qrData
-            });
-
-            // Show download buttons
-            document.getElementById('downloadJpeg').style.display = 'block';
-            document.getElementById('downloadPdf').style.display = 'block';
-
-            // Set up download buttons
-            document.getElementById('downloadJpeg').onclick = function() {
-                const canvas = qrCodeDiv.querySelector('canvas');
-                const jpegURL = canvas.toDataURL('image/jpeg');
-                const link = document.createElement('a');
-                link.href = jpegURL;
-                link.download = 'qrcode.jpeg';
-                link.click();
+            // Prepare the data for the email template
+            const templateParams = {
+                founder_name: founderName,
+                found_time: foundTime,
+                found_location: foundLocation,
+                message: message,
             };
 
-            document.getElementById('downloadPdf').onclick = function() {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF();
-                const canvas = qrCodeDiv.querySelector('canvas');
-                const imgData = canvas.toDataURL('image/jpeg');
-                
-                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 180);
-                pdf.save('qrcode.pdf');
-            };
+            // Send email using EmailJS
+            emailjs.send('L9XK5kdKc8yHK48VM', 'template_x637yx4' templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert("Announcement has been sent to your email!");
+                }, function(error) {
+                    console.error('FAILED...', error);
+                    alert("Failed to send the announcement.");
+                });
+
+            // Optionally clear the form after submission
+            document.getElementById("announcementForm").reset();
         });
     </script>
 </body>
