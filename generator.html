@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,6 +74,16 @@
     <!-- Include EmailJS SDK -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script type="text/javascript">
+        <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "YOUR_PUBLIC_KEY",
+      });
+   })();
+</script>
         // Initialize EmailJS with your user ID (replace with your own)
         emailjs.init("L9XK5kdKc8yHK48VM");
 
