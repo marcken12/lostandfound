@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,6 +54,14 @@
         .back-link:hover {
             color: #0056b3;
         }
+
+        #qrCode {
+            margin-top: 20px;
+        }
+
+        #downloadJpeg, #downloadPdf {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -67,56 +74,94 @@
             <button type="submit">Announce</button>
         </form>
 
+        <!-- QR Code Container -->
+        <div id="qrCode"></div>
+        
+        <button id="downloadJpeg" style="display:none;">Download JPEG</button>
+        <button id="downloadPdf" style="display:none;">Download PDF</button>
+
         <!-- Link back to the main page -->
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <!-- Include EmailJS SDK -->
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script type="text/javascript">
-        <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-</script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init({
-        publicKey: "YOUR_PUBLIC_KEY",
-      });
-   })();
-</script>
-        // Initialize EmailJS with your user ID (replace with your own)
-        emailjs.init("L9XK5kdKc8yHK48VM");
+    <!-- Include EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-        document.getElementById("announcementForm").addEventListener("submit", function(event) {
+    <script>
+        // Initialize EmailJS with your public key (user ID)
+        (function() {
+            emailjs.init("L9XK5kdKc8yHK48VM"); // Replace with your actual public key from EmailJS
+        })();
+
+        document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const founderName = document.getElementById("founderName").value;
-            const foundTime = document.getElementById("foundTime").value;
-            const foundLocation = document.getElementById("foundLocation").value;
+            const founderName = document.getElementById('founderName').value;
+            const foundTime = document.getElementById('foundTime').value;
+            const foundLocation = document.getElementById('foundLocation').value;
+            const qrCodeDiv = document.getElementById('qrCode');
 
-            // Combine form data into the email message
-            const message = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
+            // Create announcement message
+            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
 
-            // Prepare the data for the email template
+            // Save the announcement in localStorage (optional)
+            localStorage.setItem('announcement', announcement);
+
+            // Prepare template params
             const templateParams = {
                 founder_name: founderName,
                 found_time: foundTime,
                 found_location: foundLocation,
-                message: message,
+                message: announcement
             };
 
-            // Send email using EmailJS
-           emailjs.send("service_qp4qmd5","template_x637yx4");
+            // Debug log to check the template params before sending
+            console.log('Sending email with the following parameters:', templateParams);
+
+            // Send the email using EmailJS
+            emailjs.send('service_qp4qmd5', 'template_x637yx4', templateParams)  // Replace with your service ID and template ID
                 .then(function(response) {
-                    console.log('SUCCESS!', response.status, response.text);
-                    alert("Announcement has been sent to your email!");
-                }, function(error) {
-                    console.error('FAILED...', error);
-                    alert("Failed to send the announcement.");
+                    console.log('Email sent successfully:', response);
+                    alert('Announcement has been sent to your email!');
+                })
+                .catch(function(error) {
+                    console.error('Error sending email:', error);
+                    alert('Failed to send the announcement. Please check the console for errors.');
                 });
 
+            // Generate QR code after sending the email
+            $(qrCodeDiv).qrcode({
+                width: 128,
+                height: 128,
+                text: announcement
+            });
+
+            // Show download buttons for QR code (optional)
+            document.getElementById('downloadJpeg').style.display = 'block';
+            document.getElementById('downloadPdf').style.display = 'block';
+
+            // Set up download buttons for QR code
+            document.getElementById('downloadJpeg').onclick = function() {
+                const canvas = qrCodeDiv.querySelector('canvas');
+                const jpegURL = canvas.toDataURL('image/jpeg');
+                const link = document.createElement('a');
+                link.href = jpegURL;
+                link.download = 'qrcode.jpeg';
+                link.click();
+            };
+
+            document.getElementById('downloadPdf').onclick = function() {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const canvas = qrCodeDiv.querySelector('canvas');
+                const imgData = canvas.toDataURL('image/jpeg');
+                
+                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 180);
+                pdf.save('qrcode.pdf');
+            };
+
             // Optionally clear the form after submission
-            document.getElementById("announcementForm").reset();
+            document.getElementById('announcementForm').reset();
         });
     </script>
 </body>
