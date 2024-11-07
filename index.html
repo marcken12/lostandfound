@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+
+    <!-- Adding Bootstrap for styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <title>Login & Signup with Firebase</title>
+
+    <!-- Internal Styling -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+        .center {
+            width: 400px;
+            margin: 200px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-control {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Form for Login and Signup -->
+    <div class="col-4 center">
+        <h3 class="text-center">Login / Signup</h3>
+        
+        <!-- Email and Password Fields -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control shadow-sm" id="txtEmail" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control shadow-sm" id="txtPassword" name="password" required>
+        </div>
+
+        <!-- Buttons for Login and Signup -->
+        <button type="submit" class="btn btn-primary shadow" id="btnLogin">Login</button>
+        <button type="submit" class="btn btn-success shadow" id="btnSignup">Signup</button>
+    </div>
+
+    <!-- Firebase SDK and Script -->
+    <script>
+        (function () {
+            // Your Firebase configuration (filled in with your API)
+            var firebaseConfig = {
+                apiKey: "AIzaSyAgAu5Ipx7mpBFcDOMyE-hBf4AOKio6_00",
+                authDomain: "lostandfound-6235f.firebaseapp.com",
+                projectId: "lostandfound-6235f",
+                storageBucket: "lostandfound-6235f.firebasestorage.app",
+                messagingSenderId: "227954756606",
+                appId: "1:227954756606:web:87bc6bf261a17f8b9fceaf",
+                measurementId: "G-RF3W9FP54D"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+            // Get Elements
+            const txtEmail = document.getElementById("txtEmail");
+            const txtPassword = document.getElementById("txtPassword");
+            const btnLogin = document.getElementById("btnLogin");
+            const btnSignup = document.getElementById("btnSignup");
+
+            // Add Login Event
+            btnLogin.addEventListener('click', e => {
+                const email = txtEmail.value;
+                const password = txtPassword.value;
+
+                const auth = firebase.auth();
+
+                // Sign in with Firebase auth
+                auth.signInWithEmailAndPassword(email, password).then(user => {
+                    alert("Login Successful :)");
+                }).catch(err => {
+                    alert("Login Error: " + err.message);
+                });
+            });
+
+            // Add Signup Event
+            btnSignup.addEventListener('click', e => {
+                // Get email and password
+                const email = txtEmail.value;
+                const password = txtPassword.value;
+
+                const auth = firebase.auth();
+
+                // Sign up with Firebase auth
+                auth.createUserWithEmailAndPassword(email, password).then(user => {
+                    alert("Signup Successful :)");
+                }).catch(err => {
+                    alert("Signup Error: " + err.message);
+                });
+            });
+        })();
+    </script>
+    
+</body>
+</html>
