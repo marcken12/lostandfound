@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional Dashboard</title>
     <style>
+        /* Your existing styles */
         * {
             margin: 0;
             padding: 0;
@@ -186,7 +187,7 @@
             <li><a href="module.html">Lost Item Scanner</a></li>
             <li><a href="generator.html">QR Registration</a></li>
             <li><a href="index.html">Emergency Logout</a></li>
-            <li><a href="index.html">Logout</a></li>
+            <li><a href="index.html" id="btnLogout">Logout</a></li>
         </ul>
     </nav>
 
@@ -225,38 +226,49 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+
     <script>
+        // Initialize Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyAgAu5Ipx7mpBFcDOMyE-hBf4AOKio6_00",
+            authDomain: "lostandfound-6235f.firebaseapp.com",
+            projectId: "lostandfound-6235f",
+            storageBucket: "lostandfound-6235f.firebasestorage.app",
+            messagingSenderId: "227954756606",
+            appId: "1:227954756606:web:87bc6bf261a17f8b9fceaf",
+            measurementId: "G-RF3W9FP54D"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Check user authentication
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                // If the user is not logged in, redirect to login page
+                window.location.href = "index.html";
+            }
+        });
+
+        // Toggle drawer open/close
         const toggleBtn = document.getElementById('toggle-btn');
         const menuDrawer = document.getElementById('menu-drawer');
         const mainContent = document.getElementById('main-content');
 
-        // Toggle drawer open/close
         toggleBtn.addEventListener('click', () => {
             menuDrawer.classList.toggle('open-drawer');
             mainContent.classList.toggle('move-right');
         });
 
-        window.onload = function() {
-            const reportData = JSON.parse(localStorage.getItem('reportData'));
-            if (reportData) {
-                const reportDetails = `
-                    <p><strong>Time:</strong> ${reportData.time}</p>
-                    <p><strong>Item Description:</strong> ${reportData.itemDescription}</p>
-                    <p><strong>Location:</strong> ${reportData.location}</p>
-                    <p><strong>Name:</strong> ${reportData.name}</p>
-                    <p><strong>ID:</strong> ${reportData.id}</p>
-                `;
-                document.getElementById('report-details').innerHTML = reportDetails;
-                document.getElementById('report-popup').style.display = 'flex';
-
-                // Clear the data after displaying
-                localStorage.removeItem('reportData');
-            }
-        };
-
-        // Close popup event
-        document.getElementById('close-popup')?.addEventListener('click', function () {
-            document.getElementById('report-popup').style.display = 'none';
+        // Logout button functionality
+        const btnLogout = document.getElementById('btnLogout');
+        btnLogout.addEventListener('click', () => {
+            firebase.auth().signOut().then(() => {
+                alert("You have logged out!");
+                window.location.href = "index.html";  // Redirect to login page after logout
+            }).catch((err) => {
+                alert("Error logging out: " + err.message);
+            });
         });
     </script>
 </body>
