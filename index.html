@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Signup</title>
+    <title>Sign In & Sign Up</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: #f4f7fc;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,65 +22,71 @@
 
         .container {
             background-color: white;
-            padding: 40px;
+            padding: 30px 40px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            width: 350px;
         }
 
         h1 {
-            color: #1f2937;
-            margin-bottom: 30px;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="email"], input[type="password"], input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 16px;
+            background-color: #f9f9f9;
+        }
+
+        input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
         }
 
         button {
-            background-color: #1f2937;
+            background-color: #007BFF;
             color: white;
+            padding: 14px 20px;
             border: none;
-            padding: 12px 20px;
+            border-radius: 6px;
+            width: 100%;
             cursor: pointer;
             font-size: 16px;
-            border-radius: 5px;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #3b82f6;
-        }
-
-        .switch-btns {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .switch-btns button {
-            width: 48%;
+            background-color: #0056b3;
         }
 
         .message {
-            margin-top: 20px;
-            color: green;
-            font-size: 16px;
+            margin-top: 15px;
+            font-size: 14px;
         }
 
         .error {
-            color: red;
+            color: #e74c3c;
         }
 
-        /* Additional Signup Fields */
+        .switch-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #007BFF;
+            cursor: pointer;
+        }
+
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+
         .signup-fields {
             display: none;
         }
@@ -90,120 +95,131 @@
 <body>
 
 <div class="container">
-    <h1 id="form-title">Login</h1>
+    <h1 id="form-title">Sign In</h1>
 
-    <!-- Login/Signup Form -->
+    <!-- Form for Sign In / Sign Up -->
     <form id="auth-form">
-        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="email" id="email" placeholder="Email" required><br>
         <input type="password" id="password" placeholder="Password" required><br>
 
         <!-- Additional fields for Sign Up -->
         <div class="signup-fields" id="signup-fields">
-            <input type="text" id="name" placeholder="Name"><br>
-            <input type="text" id="course" placeholder="Course"><br>
-            <input type="text" id="idNumber" placeholder="ID Number"><br>
+            <input type="text" id="name" placeholder="Full Name" required><br>
+            <input type="text" id="course" placeholder="Course" required><br>
+            <input type="text" id="idNumber" placeholder="ID Number" required><br>
         </div>
 
-        <button type="submit" id="submit-btn">Login</button>
+        <button type="submit" id="submit-btn">Sign In</button>
         <div class="message" id="form-message"></div>
     </form>
 
-    <!-- Switch between Login/Signup -->
-    <div class="switch-btns">
-        <button id="login-btn">Login</button>
-        <button id="signup-btn">Sign Up</button>
-    </div>
+    <!-- Switch Link: Toggle between Sign In and Sign Up -->
+    <div class="switch-link" id="switch-link">Don't have an account? Sign Up</div>
 </div>
 
-<script>
-    const formTitle = document.getElementById('form-title');
-    const submitBtn = document.getElementById('submit-btn');
-    const formMessage = document.getElementById('form-message');
-    const authForm = document.getElementById('auth-form');
-    const signupFields = document.getElementById('signup-fields');
+<!-- Firebase SDKs -->
+<script type="module">
+  // Import the necessary functions from the Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
 
-    // Form Toggle Buttons
-    const loginBtn = document.getElementById('login-btn');
-    const signupBtn = document.getElementById('signup-btn');
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvbVH5Ft_MSZqBZ838uQUgSQzpVGBY3rA",
+    authDomain: "my-awesome-be134.firebaseapp.com",
+    projectId: "my-awesome-be134",
+    storageBucket: "my-awesome-be134.firebasestorage.app",
+    messagingSenderId: "541435983066",
+    appId: "1:541435983066:web:83ce16fee631adf8e4e1e3",
+    measurementId: "G-4VSQBXHB10"
+  };
 
-    // Switch to Login View
-    loginBtn.addEventListener('click', () => {
-        formTitle.textContent = "Login";
-        submitBtn.textContent = "Login";
-        signupFields.style.display = "none";
-        formMessage.textContent = "";
-    });
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const analytics = getAnalytics(app);
 
-    // Switch to Signup View
-    signupBtn.addEventListener('click', () => {
-        formTitle.textContent = "Sign Up";
-        submitBtn.textContent = "Sign Up";
-        signupFields.style.display = "block";
-        formMessage.textContent = "";
-    });
+  // References to the form elements
+  const formTitle = document.getElementById('form-title');
+  const submitBtn = document.getElementById('submit-btn');
+  const formMessage = document.getElementById('form-message');
+  const authForm = document.getElementById('auth-form');
+  const signupFields = document.getElementById('signup-fields');
+  const switchLink = document.getElementById('switch-link');
 
-    // Form Submission Handling
-    authForm.addEventListener('submit', (event) => {
-        event.preventDefault();
+  let isSignUp = false; // Flag to track Sign Up or Sign In mode
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+  // Switch between Sign In and Sign Up views
+  switchLink.addEventListener('click', () => {
+    isSignUp = !isSignUp;
 
-        if (username === "" || password === "") {
-            formMessage.textContent = "Please fill out all fields.";
-            formMessage.classList.add('error');
-            return;
+    if (isSignUp) {
+      formTitle.textContent = "Sign Up";
+      submitBtn.textContent = "Sign Up";
+      signupFields.style.display = "block";
+      switchLink.textContent = "Already have an account? Sign In";
+    } else {
+      formTitle.textContent = "Sign In";
+      submitBtn.textContent = "Sign In";
+      signupFields.style.display = "none";
+      switchLink.textContent = "Don't have an account? Sign Up";
+    }
+    formMessage.textContent = "";
+  });
+
+  // Handle form submission
+  authForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (email === "" || password === "") {
+      formMessage.textContent = "Please fill out all fields.";
+      formMessage.classList.add('error');
+      return;
+    }
+
+    formMessage.classList.remove('error');
+
+    try {
+      if (isSignUp) {
+        // Handle Sign Up
+        const name = document.getElementById('name').value;
+        const course = document.getElementById('course').value;
+        const idNumber = document.getElementById('idNumber').value;
+
+        if (name === "" || course === "" || idNumber === "") {
+          formMessage.textContent = "Please fill out all sign-up fields.";
+          formMessage.classList.add('error');
+          return;
         }
 
+        // Firebase Sign Up
+        await createUserWithEmailAndPassword(auth, email, password);
+
+        formMessage.textContent = `Sign Up successful! Welcome, ${name}!`;
         formMessage.classList.remove('error');
+        setTimeout(() => {
+          window.location.href = "main.html";  // Redirect to main page after sign-up
+        }, 1000);
+      } else {
+        // Handle Sign In
+        await signInWithEmailAndPassword(auth, email, password);
 
-        if (submitBtn.textContent === "Login") {
-            // Mock Login Action
-            const storedUser = JSON.parse(localStorage.getItem(username));
-
-            if (storedUser && storedUser.password === password) {
-                formMessage.textContent = "Login successful!";
-                formMessage.classList.remove('error');
-
-                // Redirect to Dashboard
-                setTimeout(() => {
-                    window.location.href = "main.html";
-                }, 1000);
-            } else {
-                formMessage.textContent = "Incorrect username or password.";
-                formMessage.classList.add('error');
-            }
-        } else if (submitBtn.textContent === "Sign Up") {
-            // Get Sign Up fields
-            const name = document.getElementById('name').value;
-            const course = document.getElementById('course').value;
-            const idNumber = document.getElementById('idNumber').value;
-
-            if (name === "" || course === "" || idNumber === "") {
-                formMessage.textContent = "Please fill out all sign-up fields.";
-                formMessage.classList.add('error');
-                return;
-            }
-
-            // Store user data in localStorage
-            const userData = {
-                username: username,
-                password: password,
-                name: name,
-                course: course,
-                idNumber: idNumber
-            };
-
-            localStorage.setItem(username, JSON.stringify(userData));
-
-            formMessage.textContent = `Sign Up successful! Welcome, ${name}!`;
-
-            // Redirect to Dashboard
-            setTimeout(() => {
-                window.location.href = "main.html";
-            }, 1000);
-        }
-    });
+        formMessage.textContent = "Sign In successful!";
+        formMessage.classList.remove('error');
+        setTimeout(() => {
+          window.location.href = "main.html";  // Redirect to main page after sign-in
+        }, 1000);
+      }
+    } catch (error) {
+      const errorMessage = error.message;
+      formMessage.textContent = `Error: ${errorMessage}`;
+      formMessage.classList.add('error');
+    }
+  });
 </script>
 
 </body>
