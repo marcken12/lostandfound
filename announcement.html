@@ -13,7 +13,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: rgb(128 0 0 / 66%);;
+            background-color: rgb(128 0 0 / 66%);
         }
 
         .container {
@@ -70,7 +70,10 @@
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script>
+    <script type="text/javascript">
+        // Initialize EmailJS (You only need to do this once)
+        emailjs.init('L9XK5kdKc8yHK48VM'); // Replace with your EmailJS user_id
+
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -80,13 +83,29 @@
 
             // Create announcement message
             const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
+            
+            // Save the announcement in localStorage
             localStorage.setItem('announcement', announcement);
+
+            // Send the announcement via email using EmailJS
+            const templateParams = {
+                founder_name: founderName,
+                found_time: foundTime,
+                found_location: foundLocation,
+                message: announcement,
+            };
+
+            emailjs.send('L9XK5kdKc8yHK48VM', 'template_6i9aagp', templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('Announcement has been sent to your email!');
+                }, function(error) {
+                    console.error('FAILED...', error);
+                    alert('Failed to send the announcement.');
+                });
 
             // Optionally clear the form after submission
             document.getElementById('announcementForm').reset();
-
-            // Notify the user about the announcement
-            alert('Announcement has been made!');
         });
     </script>
 </body>
