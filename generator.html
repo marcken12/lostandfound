@@ -53,66 +53,49 @@
         <h1>Scan QR Code</h1>
         <div class="qr-scanner-container">
             <div id="qr-reader"></div>
-            <div class="serial-code" id="serial-code">Serial: ######</div>
-            <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
-            <button class="announce-btn" onclick="goToAnnouncementPage()">Announce</button>
+            <button class="announce-btn" onclick="goToAnnouncementPage()">Go to Announcement Page</button>
         </div>
     </div>
 
-    <!-- Include html5-qrcode library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        function generateSerialCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        function onScanSuccess(decodedText, decodedResult) {
+        // Success callback when a QR code is scanned
+        function onScanSuccess(decodedText) {
             console.log("QR Code scanned successfully:", decodedText);
+
+            // Parse the scanned data assuming JSON format
             try {
-                const scannedData = JSON.parse(decodedText);
-
-                // Store each field in localStorage
-                localStorage.setItem('scannedName', scannedData.name || '');
-                localStorage.setItem('scannedEmail', scannedData.email || '');
-                localStorage.setItem('scannedPhone', scannedData.phone || '');
-                localStorage.setItem('scannedID', scannedData.id || '');
-                localStorage.setItem('scannedCourse', scannedData.course || '');
-
-                // Generate and save a unique serial code
-                const newSerialCode = generateSerialCode();
-                document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
-                localStorage.setItem('scannedSerial', newSerialCode);
-
-                // Stop scanner after successful scan
-                html5QrcodeScanner.clear();
+                const data = JSON.parse(decodedText);
+                localStorage.setItem('scannedName', data.name || '');
+                localStorage.setItem('scannedEmail', data.email || '');
+                localStorage.setItem('scannedPhone', data.phone || '');
+                localStorage.setItem('scannedID', data.id || '');
+                localStorage.setItem('scannedCourse', data.course || '');
+                alert("Scanned data saved successfully!");
             } catch (error) {
-                console.error("Error parsing scanned data:", error);
+                console.error("Invalid QR code format:", error);
+                alert("QR code format is invalid.");
             }
+
+            // Stop the scanner after a successful scan
+            html5QrcodeScanner.clear();
         }
 
-        function onScanFailure(error) {
-            console.warn(`QR Code scan failed: ${error}`);
-        }
-
-        function copySerialCode() {
-            const serialCode = document.getElementById('serial-code').textContent.split(': ')[1];
-            navigator.clipboard.writeText(serialCode).then(() => {
-                alert("Serial code copied to clipboard!");
-            });
-        }
-
-        function goToAnnouncementPage() {
-            window.location.href = "announcement.html";
-        }
-
+        // Initialize the QR scanner
         function startQrScanner() {
             const html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader", 
                 { fps: 10, qrbox: { width: 250, height: 250 } }
             );
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            html5QrcodeScanner.render(onScanSuccess);
         }
 
+        // Navigate to the Announcement Page
+        function goToAnnouncementPage() {
+            window.location.href = "announcement.html";
+        }
+
+        // Start scanner on page load
         window.addEventListener('load', startQrScanner);
     </script>
 </body>
