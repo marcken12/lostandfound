@@ -29,9 +29,9 @@
         }
         .read-only {
             background-color: #f9f9f9;
-            color: #333;
             border: 1px solid #ddd;
             border-radius: 5px;
+            color: #333;
         }
         button {
             padding: 10px;
@@ -48,37 +48,41 @@
     <div class="container">
         <h1>Announcement Form</h1>
 
+        <!-- Scanned Data Section -->
         <h2>Scanned Data</h2>
-        <div>
-            <input type="text" id="scannedName" class="read-only" readonly>
-            <input type="email" id="scannedEmail" class="read-only" readonly>
-            <input type="tel" id="scannedPhone" class="read-only" readonly>
-            <input type="text" id="scannedID" class="read-only" readonly>
-            <input type="text" id="scannedCourse" class="read-only" readonly>
-            <input type="text" id="scannedSerial" class="read-only" readonly>
-        </div>
+        <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
+        <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
+        <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
+        <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
+        <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
 
+        <!-- Founder Details Section -->
         <h2>Founder Details</h2>
         <form id="announcementForm">
-            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="text" id="founderName" placeholder="Founder's Name" required>
             <input type="email" id="founderEmail" placeholder="Founder Email" required>
             <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
             <input type="text" id="founderID" placeholder="Founder ID" required>
             <input type="text" id="founderCourse" placeholder="Founder Course" required>
-            <input type="text" id="foundTime" placeholder="Time" required>
-            <input type="text" id="foundLocation" placeholder="Saan" required>
             <button type="submit">Announce</button>
         </form>
     </div>
 
     <script>
+        // Load scanned data from localStorage and populate read-only fields
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
             document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
             document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
             document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
             document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
-            document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
+        });
+
+        // Handle form submission
+        document.getElementById('announcementForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert("Announcement submitted successfully!");
+            document.getElementById('announcementForm').reset();
         });
     </script>
 </body>
