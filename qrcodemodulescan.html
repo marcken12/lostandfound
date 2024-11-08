@@ -15,7 +15,6 @@
             margin: 0;
             background-color: rgb(128 0 0 / 66%);
         }
-
         .container {
             text-align: center;
             background: white;
@@ -23,20 +22,17 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         input, .read-only {
             padding: 10px;
             margin: 10px 0;
             width: 80%;
         }
-
         .read-only {
             background-color: #f9f9f9;
             color: #333;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-
         button {
             padding: 10px;
             margin: 5px;
@@ -46,18 +42,15 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         .back-link {
             margin-top: 15px;
             text-decoration: none;
             color: #007BFF;
             font-weight: bold;
         }
-
         .back-link:hover {
             color: #0056b3;
         }
@@ -89,8 +82,8 @@
             <input type="text" id="founderCourse" placeholder="Founder Course" required>
 
             <!-- Time and Location -->
-            <input type="text" id="found_Time" placeholder="Time" required>
-            <input type="text" id="found_Location" placeholder="Saan" required>
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
 
             <!-- Submit Button -->
             <button type="submit">Announce</button>
@@ -101,8 +94,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
     <script>
+        const SERVICE_ID = "service_jba30dm";     // Your EmailJS Service ID
+        const TEMPLATE_ID = "template_x637yx4";   // Your EmailJS Template ID
+        const PUBLIC_KEY = "6VQYAlxfK2n4yDvdq";   // Your EmailJS Public Key
+
         // Initialize EmailJS
-        emailjs.init('6VQYAlxfK2n4yDvdq'); // Replace with your EmailJS user ID
+        emailjs.init(6VQYAlxfK2n4yDvdq); 
 
         // Fill scanned data on page load
         document.addEventListener("DOMContentLoaded", function() {
@@ -118,15 +115,6 @@
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const founderName = document.getElementById('founderName').value;
-            const founderEmail = document.getElementById('founderEmail').value;
-            const founderPhone = document.getElementById('founderPhone').value;
-            const founderID = document.getElementById('founderID').value;
-            const founderCourse = document.getElementById('founderCourse').value;
-            const foundTime = document.getElementById('foundTime').value;
-            const foundLocation = document.getElementById('foundLocation').value;
-
-            // Template parameters for EmailJS
             const templateParams = {
                 scanned_name: document.getElementById('scannedName').value,
                 scanned_email: document.getElementById('scannedEmail').value,
@@ -134,22 +122,21 @@
                 scanned_id: document.getElementById('scannedID').value,
                 scanned_course: document.getElementById('scannedCourse').value,
                 scanned_serial: document.getElementById('scannedSerial').value,
-                founder_name: founderName,
-                founder_email: founderEmail,
-                founder_phone: founderPhone,
-                founder_id: founderID,
-                founder_course: founderCourse,
-                found_time: foundTime,
-                found_location: foundLocation,
+                founder_name: document.getElementById('founderName').value,
+                founder_email: document.getElementById('founderEmail').value,
+                founder_phone: document.getElementById('founderPhone').value,
+                founder_id: document.getElementById('founderID').value,
+                founder_course: document.getElementById('founderCourse').value,
+                found_time: document.getElementById('foundTime').value,
+                found_location: document.getElementById('foundLocation').value
             };
 
-            // Send email using EmailJS
-            emailjs.send('service_jba30dm', 'template_x637yx4', templateParams) // Replace with your service and template IDs
+            emailjs.send(service_jba30dm, template_x637yx4, templateParams)
                 .then(function(response) {
                     alert('Announcement has been sent successfully!');
                 }, function(error) {
                     alert('Failed to send the announcement.');
-                    console.error('Error:', error);
+                    console.error('Detailed EmailJS Error:', error);
                 });
 
             document.getElementById('announcementForm').reset();
