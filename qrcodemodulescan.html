@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner with Serial Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .qr-scanner-container {
+            width: 350px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .qr-scanner-container h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: #333;
+        }
+        #qr-reader {
+            width: 100%;
+            height: 250px; /* Ensures there's enough height for the QR scanner */
+            margin-bottom: 20px;
+        }
+        .serial-code {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+        .instruction {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        .copy-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="qr-scanner-container">
+    <h2>QR Scanner</h2>
+    <div id="qr-reader"></div>
+    <div class="instruction">Please copy the serial code:</div>
+    <div class="serial-code" id="serial-code">######</div>
+    <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
+    <div id="error-message" class="error-message"></div>
+</div>
+
+<!-- Include the html5-qrcode library -->
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+    // Function to generate a unique 6-digit serial code
+    function generateSerialCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // Success callback when a QR code is successfully scanned
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log("QR Code scanned successfully:", decodedText);
+
+        // Generate and display the serial code
+        const serialCode = generateSerialCode();
+        document.getElementById('serial-code').textContent = serialCode;
+
+        // Stop scanning after the first successful scan
+        html5QrcodeScanner.clear();
+    }
+
+    // Failure callback for QR code scan
+    function onScanFailure(error) {
+        console.warn(`QR Code scan failed: ${error}`);
+    }
+
+    // Function to copy the serial code to clipboard
+    function copySerialCode() {
+        const serialCode = document.getElementById('serial-code').textContent;
+        navigator.clipboard.writeText(serialCode).then(() => {
+            alert("Serial code copied to clipboard!");
+        });
+    }
+
+    // Initialize the QR code scanner with enhanced error handling
+    function startQrScanner() {
+        const qrScannerContainer = document.getElementById('qr-reader');
+        const errorMessage = document.getElementById("error-message");
+
+        try {
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", 
+                { fps: 10, qrbox: { width: 250, height: 250 } }
+            );
+            html5QrcodeScanner.render(
+                onScanSuccess,
+                (error) => {
+                    console.error("Error initializing QR scanner:", error);
+                    errorMessage.textContent = "Failed to initialize QR scanner. Please check camera permissions.";
+                }
+            );
+        } catch (error) {
+            errorMessage.textContent = "An unexpected error occurred. Please try refreshing the page.";
+            console.error("QR scanner initialization error:", error);
+        }
+    }
+
+    // Start the QR scanner when the page loads
+    window.addEventListener('load', startQrScanner);
+</script>
+
+</body>
+</html>
