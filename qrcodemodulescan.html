@@ -5,85 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
     <style>
-        /* Your existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(128 0 0 / 66%);
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, .read-only {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+        }
+        .read-only {
+            background-color: #f9f9f9;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Announcement Form</h1>
 
-        <!-- Scanned Data Display -->
-        <div id="scannedDataSection">
-            <h2>Scanned Data:</h2>
-            <p><strong>Name:</strong> <span id="scannedName"></span></p>
-            <p><strong>Email:</strong> <span id="scannedEmail"></span></p>
-            <p><strong>Phone:</strong> <span id="scannedPhone"></span></p>
-            <p><strong>ID:</strong> <span id="scannedID"></span></p>
-            <p><strong>Course:</strong> <span id="scannedCourse"></span></p>
-            <p><strong>Serial Code:</strong> <span id="scannedSerial"></span></p>
+        <h2>Scanned Data</h2>
+        <div>
+            <input type="text" id="scannedName" class="read-only" readonly>
+            <input type="email" id="scannedEmail" class="read-only" readonly>
+            <input type="tel" id="scannedPhone" class="read-only" readonly>
+            <input type="text" id="scannedID" class="read-only" readonly>
+            <input type="text" id="scannedCourse" class="read-only" readonly>
+            <input type="text" id="scannedSerial" class="read-only" readonly>
         </div>
 
-        <!-- Founder Information Form -->
+        <h2>Founder Details</h2>
         <form id="announcementForm">
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="email" id="founderEmail" placeholder="Founder Email" required>
+            <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
+            <input type="text" id="founderID" placeholder="Founder ID" required>
+            <input type="text" id="founderCourse" placeholder="Founder Course" required>
             <input type="text" id="foundTime" placeholder="Time" required>
             <input type="text" id="foundLocation" placeholder="Saan" required>
             <button type="submit">Announce</button>
         </form>
-
-        <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script type="text/javascript">
-        // Load and display scanned data on page load
-        window.addEventListener('load', function() {
-            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
-
-            if (scannedData) {
-                document.getElementById('scannedName').textContent = scannedData.name || '';
-                document.getElementById('scannedEmail').textContent = scannedData.email || '';
-                document.getElementById('scannedPhone').textContent = scannedData.phone || '';
-                document.getElementById('scannedID').textContent = scannedData.id || '';
-                document.getElementById('scannedCourse').textContent = scannedData.course || '';
-                document.getElementById('scannedSerial').textContent = scannedData.serial || '';
-            }
-        });
-
-        // Submit announcement form with additional data (using EmailJS as per your example)
-        document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const founderName = document.getElementById('founderName').value;
-            const foundTime = document.getElementById('foundTime').value;
-            const foundLocation = document.getElementById('foundLocation').value;
-            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
-
-            // Prepare announcement message
-            const announcement = `Scanned Data - Name: ${scannedData.name}, Email: ${scannedData.email}, Phone: ${scannedData.phone}, ID: ${scannedData.id}, Course: ${scannedData.course}\n` +
-                `Founder - Name: ${founderName}, Time: ${foundTime}, Location: ${foundLocation}`;
-
-            // Send data via EmailJS
-            const templateParams = {
-                founder_name: founderName,
-                found_time: foundTime,
-                found_location: foundLocation,
-                scanned_name: scannedData.name,
-                scanned_email: scannedData.email,
-                scanned_phone: scannedData.phone,
-                scanned_id: scannedData.id,
-                scanned_course: scannedData.course,
-                serial_code: scannedData.serial
-            };
-
-            emailjs.send('L9XK5kdKc8yHK48VM', 'template_6i9aagp', templateParams)
-                .then(response => {
-                    console.log('SUCCESS!', response.status, response.text);
-                    alert('Announcement has been sent!');
-                    document.getElementById('announcementForm').reset();
-                }, error => {
-                    console.error('FAILED...', error);
-                    alert('Failed to send announcement.');
-                });
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
+            document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
+            document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
+            document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
+            document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
+            document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
         });
     </script>
 </body>
