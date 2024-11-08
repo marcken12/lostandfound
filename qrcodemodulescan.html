@@ -15,6 +15,7 @@
             margin: 0;
             background-color: rgb(128 0 0 / 66%);
         }
+
         .container {
             text-align: center;
             background: white;
@@ -22,17 +23,20 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         input, .read-only {
             padding: 10px;
             margin: 10px 0;
             width: 80%;
         }
+
         .read-only {
             background-color: #f9f9f9;
+            color: #333;
             border: 1px solid #ddd;
             border-radius: 5px;
-            color: #333;
         }
+
         button {
             padding: 10px;
             margin: 5px;
@@ -42,46 +46,112 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Announcement Form</h1>
-
-        <!-- Scanned Data Section -->
+        
+        <!-- Scanned Data Section (top) -->
         <h2>Scanned Data</h2>
-        <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
-        <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
-        <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
-        <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
-        <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
+        <div>
+            <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
+            <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
+            <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
+            <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
+            <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
+            <input type="text" id="scannedSerial" class="read-only" placeholder="Scanned Serial" readonly>
+        </div>
 
-        <!-- Founder Details Section -->
+        <!-- Founder Details Section (bottom) -->
         <h2>Founder Details</h2>
         <form id="announcementForm">
-            <input type="text" id="founderName" placeholder="Founder's Name" required>
+            <!-- Founder Information (empty initially) -->
+            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
             <input type="email" id="founderEmail" placeholder="Founder Email" required>
             <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
             <input type="text" id="founderID" placeholder="Founder ID" required>
             <input type="text" id="founderCourse" placeholder="Founder Course" required>
+
+            <!-- Time and Location -->
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
+
+            <!-- Submit Button -->
             <button type="submit">Announce</button>
         </form>
+
+        <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
     <script>
-        // Load scanned data from localStorage and populate read-only fields
+        // Initialize EmailJS
+        emailjs.init('6VQYAlxfK2n4yDvdq'); // Replace with your EmailJS user ID
+
+        // Fill scanned data on page load
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
             document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
             document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
             document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
             document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
+            document.getElementById('scannedSerial').value = localStorage.getItem('serialCode') || 'No serial scanned';
         });
 
-        // Handle form submission
+        // Handle form submission with EmailJS
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            alert("Announcement submitted successfully!");
+
+            const founderName = document.getElementById('founderName').value;
+            const founderEmail = document.getElementById('founderEmail').value;
+            const founderPhone = document.getElementById('founderPhone').value;
+            const founderID = document.getElementById('founderID').value;
+            const founderCourse = document.getElementById('founderCourse').value;
+            const foundTime = document.getElementById('foundTime').value;
+            const foundLocation = document.getElementById('foundLocation').value;
+
+            // Template parameters for EmailJS
+            const templateParams = {
+                scanned_name: document.getElementById('scannedName').value,
+                scanned_email: document.getElementById('scannedEmail').value,
+                scanned_phone: document.getElementById('scannedPhone').value,
+                scanned_id: document.getElementById('scannedID').value,
+                scanned_course: document.getElementById('scannedCourse').value,
+                scanned_serial: document.getElementById('scannedSerial').value,
+                founder_name: founderName,
+                founder_email: founderEmail,
+                founder_phone: founderPhone,
+                founder_id: founderID,
+                founder_course: founderCourse,
+                found_time: foundTime,
+                found_location: foundLocation,
+            };
+
+            // Send email using EmailJS
+            emailjs.send('-a9-bv3YntudLefGyjCW6', 'template_x637yx4', templateParams) // Replace with your service and template IDs
+                .then(function(response) {
+                    alert('Announcement has been sent successfully!');
+                }, function(error) {
+                    alert('Failed to send the announcement.');
+                    console.error('Error:', error);
+                });
+
             document.getElementById('announcementForm').reset();
         });
     </script>
