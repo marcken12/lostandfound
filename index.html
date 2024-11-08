@@ -75,6 +75,9 @@
           console.log("User signed in:", userCredential.user.email);
           document.getElementById("signinForm").reset();
           showLoggedInUI();
+          
+          // Redirect to the main page after successful login
+          window.location.href = "main.html"; // Replace 'main.html' with your actual main page URL
         })
         .catch((error) => {
           console.error("Signin error:", error.message);
@@ -238,4 +241,4 @@
   </script>
 
 </body>
-</html
+</html>
