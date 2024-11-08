@@ -46,11 +46,6 @@
         .announce-btn {
             background-color: #008CBA;
         }
-        .error-message {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -61,41 +56,44 @@
             <div class="serial-code" id="serial-code">Serial: ######</div>
             <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
             <button class="announce-btn" onclick="goToAnnouncementPage()">Announce</button>
-            <div id="error-message" class="error-message"></div>
         </div>
     </div>
 
     <!-- Include html5-qrcode library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        // Function to generate a unique 6-digit serial code
         function generateSerialCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        // Success callback when a QR code is scanned
         function onScanSuccess(decodedText, decodedResult) {
             console.log("QR Code scanned successfully:", decodedText);
+            try {
+                const scannedData = JSON.parse(decodedText);
 
-            // Generate and display a new serial code
-            const newSerialCode = generateSerialCode();
-            document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
+                // Store each field in localStorage
+                localStorage.setItem('scannedName', scannedData.name || '');
+                localStorage.setItem('scannedEmail', scannedData.email || '');
+                localStorage.setItem('scannedPhone', scannedData.phone || '');
+                localStorage.setItem('scannedID', scannedData.id || '');
+                localStorage.setItem('scannedCourse', scannedData.course || '');
 
-            // Store scanned data and serial code in localStorage
-            const scannedData = { data: decodedText };  // Add more properties if needed
-            localStorage.setItem('serialCode', newSerialCode);
-            localStorage.setItem('scannedData', JSON.stringify(scannedData));
+                // Generate and save a unique serial code
+                const newSerialCode = generateSerialCode();
+                document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
+                localStorage.setItem('scannedSerial', newSerialCode);
 
-            // Stop the scanner after a successful scan
-            html5QrcodeScanner.clear();
+                // Stop scanner after successful scan
+                html5QrcodeScanner.clear();
+            } catch (error) {
+                console.error("Error parsing scanned data:", error);
+            }
         }
 
-        // Handle QR code scan failure
         function onScanFailure(error) {
             console.warn(`QR Code scan failed: ${error}`);
         }
 
-        // Copy serial code to clipboard
         function copySerialCode() {
             const serialCode = document.getElementById('serial-code').textContent.split(': ')[1];
             navigator.clipboard.writeText(serialCode).then(() => {
@@ -103,26 +101,18 @@
             });
         }
 
-        // Navigate to the Announcement Page
         function goToAnnouncementPage() {
-            window.location.href = "announcement.html"; // Ensure announcement.html exists
+            window.location.href = "announcement.html";
         }
 
-        // Initialize the QR scanner
         function startQrScanner() {
-            try {
-                const html5QrcodeScanner = new Html5QrcodeScanner(
-                    "qr-reader", 
-                    { fps: 10, qrbox: { width: 250, height: 250 } }
-                );
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            } catch (error) {
-                console.error("QR scanner initialization error:", error);
-                document.getElementById("error-message").textContent = "QR code library not loaded. Please check your internet connection.";
-            }
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", 
+                { fps: 10, qrbox: { width: 250, height: 250 } }
+            );
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         }
 
-        // Start scanner on page load
         window.addEventListener('load', startQrScanner);
     </script>
 </body>
