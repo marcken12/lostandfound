@@ -226,12 +226,13 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+    <!-- Firebase SDK (modular version) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    <script>
-        // Initialize Firebase
-        var firebaseConfig = {
+        // Firebase config
+        const firebaseConfig = {
             apiKey: "AIzaSyAgAu5Ipx7mpBFcDOMyE-hBf4AOKio6_00",
             authDomain: "lostandfound-6235f.firebaseapp.com",
             projectId: "lostandfound-6235f",
@@ -240,14 +241,31 @@
             appId: "1:227954756606:web:87bc6bf261a17f8b9fceaf",
             measurementId: "G-RF3W9FP54D"
         };
-        firebase.initializeApp(firebaseConfig);
 
-        // Check user authentication
-        firebase.auth().onAuthStateChanged(user => {
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Authentication state listener
+        onAuthStateChanged(auth, (user) => {
             if (!user) {
-                // If the user is not logged in, redirect to login page
-                window.location.href = "index.html";
+                window.location.href = "index.html"; // Redirect if not logged in
+            } else {
+                console.log("User is authenticated:", user.email);
             }
+        });
+
+        // Logout functionality
+        const btnLogout = document.getElementById('btnLogout');
+        btnLogout.addEventListener('click', () => {
+            signOut(auth)
+                .then(() => {
+                    alert("You have logged out!");
+                    window.location.href = "index.html"; // Redirect to login page
+                })
+                .catch((err) => {
+                    alert("Error logging out: " + err.message);
+                });
         });
 
         // Toggle drawer open/close
@@ -259,17 +277,7 @@
             menuDrawer.classList.toggle('open-drawer');
             mainContent.classList.toggle('move-right');
         });
-
-        // Logout button functionality
-        const btnLogout = document.getElementById('btnLogout');
-        btnLogout.addEventListener('click', () => {
-            firebase.auth().signOut().then(() => {
-                alert("You have logged out!");
-                window.location.href = "index.html";  // Redirect to login page after logout
-            }).catch((err) => {
-                alert("Error logging out: " + err.message);
-            });
-        });
     </script>
+
 </body>
 </html>
