@@ -3,166 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcement Form</title>
+    <title>QR Code Scanner / Reader</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: rgb(128 0 0 / 66%);
+            background-color: #f4f4f9;
         }
-
         .container {
             text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        input {
-            padding: 10px;
-            margin: 10px 0;
-            width: 80%;
-        }
-
-        button {
-            padding: 10px;
+            width: 100%;
+            max-width: 500px;
             margin: 5px;
-            background-color: #007BFF;
+        }
+        .qr-scanner-container {
+            width: 350px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        .serial-code {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+        .copy-btn, .announce-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
         }
-
-        button:hover {
-            background-color: #0056b3;
+        .announce-btn {
+            background-color: #008CBA;
         }
-
-        .back-link {
-            margin-top: 15px;
-            text-decoration: none;
-            color: #007BFF;
-            font-weight: bold;
-        }
-
-        .back-link:hover {
-            color: #0056b3;
-        }
-
-        #qrCode {
-            margin-top: 20px;
-        }
-
-        #downloadJpeg, #downloadPdf {
-            display: none;
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Announcement Form</h1>
-        <form id="announcementForm">
-            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
-            <input type="text" id="foundTime" placeholder="Time" required>
-            <input type="text" id="foundLocation" placeholder="Saan" required>
-            <button type="submit">Announce</button>
-        </form>
-
-        <!-- QR Code Container -->
-        <div id="qrCode"></div>
-        
-        <button id="downloadJpeg" style="display:none;">Download JPEG</button>
-        <button id="downloadPdf" style="display:none;">Download PDF</button>
-
-        <!-- Link back to the main page -->
-        <a href="main.html" class="back-link">Go back to Main</a>
+        <h1>Scan QR Code</h1>
+        <div class="qr-scanner-container">
+            <div id="qr-reader"></div>
+            <div class="serial-code" id="serial-code">Serial: ######</div>
+            <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
+            <button class="announce-btn" onclick="goToAnnouncementPage()">Announce</button>
+            <div id="error-message" class="error-message"></div>
+        </div>
     </div>
 
-    <!-- Include EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
+    <!-- Include html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        // Initialize EmailJS with your public key (user ID)
-        (function() {
-            emailjs.init("L9XK5kdKc8yHK48VM"); // Replace with your actual public key from EmailJS
-        })();
+        // Function to generate a unique 6-digit serial code
+        function generateSerialCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
 
-        document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        // Success callback when a QR code is scanned
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR Code scanned successfully:", decodedText);
 
-            const founderName = document.getElementById('founderName').value;
-            const foundTime = document.getElementById('foundTime').value;
-            const foundLocation = document.getElementById('foundLocation').value;
-            const qrCodeDiv = document.getElementById('qrCode');
+            // Generate and display a new serial code
+            const newSerialCode = generateSerialCode();
+            document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
 
-            // Create announcement message
-            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
+            // Store scanned data and serial code in localStorage
+            const scannedData = { data: decodedText };  // Add more properties if needed
+            localStorage.setItem('serialCode', newSerialCode);
+            localStorage.setItem('scannedData', JSON.stringify(scannedData));
 
-            // Save the announcement in localStorage (optional)
-            localStorage.setItem('announcement', announcement);
+            // Stop the scanner after a successful scan
+            html5QrcodeScanner.clear();
+        }
 
-            // Prepare template params
-            const templateParams = {
-                founder_name: founderName,
-                found_time: foundTime,
-                found_location: foundLocation,
-                message: announcement
-            };
+        // Handle QR code scan failure
+        function onScanFailure(error) {
+            console.warn(`QR Code scan failed: ${error}`);
+        }
 
-            // Debug log to check the template params before sending
-            console.log('Sending email with the following parameters:', templateParams);
-
-            // Send the email using EmailJS
-            emailjs.send('service_qp4qmd5', 'template_x637yx4', templateParams)  // Replace with your service ID and template ID
-                .then(function(response) {
-                    console.log('Email sent successfully:', response);
-                    alert('Announcement has been sent to your email!');
-                })
-                .catch(function(error) {
-                    console.error('Error sending email:', error);
-                    alert('Failed to send the announcement. Please check the console for errors.');
-                });
-
-            // Generate QR code after sending the email
-            $(qrCodeDiv).qrcode({
-                width: 128,
-                height: 128,
-                text: announcement
+        // Copy serial code to clipboard
+        function copySerialCode() {
+            const serialCode = document.getElementById('serial-code').textContent.split(': ')[1];
+            navigator.clipboard.writeText(serialCode).then(() => {
+                alert("Serial code copied to clipboard!");
             });
+        }
 
-            // Show download buttons for QR code (optional)
-            document.getElementById('downloadJpeg').style.display = 'block';
-            document.getElementById('downloadPdf').style.display = 'block';
+        // Navigate to the Announcement Page
+        function goToAnnouncementPage() {
+            window.location.href = "announcement.html"; // Ensure announcement.html exists
+        }
 
-            // Set up download buttons for QR code
-            document.getElementById('downloadJpeg').onclick = function() {
-                const canvas = qrCodeDiv.querySelector('canvas');
-                const jpegURL = canvas.toDataURL('image/jpeg');
-                const link = document.createElement('a');
-                link.href = jpegURL;
-                link.download = 'qrcode.jpeg';
-                link.click();
-            };
+        // Initialize the QR scanner
+        function startQrScanner() {
+            try {
+                const html5QrcodeScanner = new Html5QrcodeScanner(
+                    "qr-reader", 
+                    { fps: 10, qrbox: { width: 250, height: 250 } }
+                );
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            } catch (error) {
+                console.error("QR scanner initialization error:", error);
+                document.getElementById("error-message").textContent = "QR code library not loaded. Please check your internet connection.";
+            }
+        }
 
-            document.getElementById('downloadPdf').onclick = function() {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF();
-                const canvas = qrCodeDiv.querySelector('canvas');
-                const imgData = canvas.toDataURL('image/jpeg');
-                
-                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 180);
-                pdf.save('qrcode.pdf');
-            };
-
-            // Optionally clear the form after submission
-            document.getElementById('announcementForm').reset();
-        });
+        // Start scanner on page load
+        window.addEventListener('load', startQrScanner);
     </script>
 </body>
 </html>
