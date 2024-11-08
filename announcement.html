@@ -1,39 +1,146 @@
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
-<script>
-    const SERVICE_ID = "service_jba30dm";     // Your EmailJS Service ID
-    const TEMPLATE_ID = "template_x637yx4";   // Your EmailJS Template ID
-    const PUBLIC_KEY = "6VQYAlxfK2n4yDvdq";    // Your EmailJS Public Key
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcement Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(128 0 0 / 66%);
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, .read-only {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+        }
+        .read-only {
+            background-color: #f9f9f9;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Announcement Form</h1>
+        
+        <!-- Scanned Data Section (top) -->
+        <h2>Scanned Data</h2>
+        <div>
+            <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
+            <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
+            <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
+            <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
+            <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
+            <input type="text" id="scannedSerial" class="read-only" placeholder="Scanned Serial" readonly>
+        </div>
 
-    // Initialize EmailJS
-    emailjs.init(PUBLIC_KEY);
+        <!-- Founder Details Section (bottom) -->
+        <h2>Founder Details</h2>
+        <form id="announcementForm">
+            <!-- Founder Information (empty initially) -->
+            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="email" id="founderEmail" placeholder="Founder Email" required>
+            <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
+            <input type="text" id="founderID" placeholder="Founder ID" required>
+            <input type="text" id="founderCourse" placeholder="Founder Course" required>
 
-    document.getElementById('announcementForm').addEventListener('submit', function(event) {
-        event.preventDefault();
+            <!-- Time and Location -->
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
 
-        const templateParams = {
-            scanned_name: document.getElementById('scannedName').value,
-            scanned_email: document.getElementById('scannedEmail').value,
-            scanned_phone: document.getElementById('scannedPhone').value,
-            scanned_id: document.getElementById('scannedID').value,
-            scanned_course: document.getElementById('scannedCourse').value,
-            scanned_serial: document.getElementById('scannedSerial').value,
-            founder_name: document.getElementById('founderName').value,
-            founder_email: document.getElementById('founderEmail').value,
-            founder_phone: document.getElementById('founderPhone').value,
-            founder_id: document.getElementById('founderID').value,
-            founder_course: document.getElementById('founderCourse').value,
-            found_time: document.getElementById('foundTime').value,
-            found_location: document.getElementById('foundLocation').value
-        };
+            <!-- Submit Button -->
+            <button type="submit">Announce</button>
+        </form>
 
-        emailjs.send(service_jba30dm, template_x637yx4, templateParams)
-            .then(function(response) {
-                alert('Announcement has been sent successfully!');
-            }, function(error) {
-                alert('Failed to send the announcement.');
-                console.error('Detailed EmailJS Error:', error);
-            });
+        <a href="main.html" class="back-link">Go back to Main</a>
+    </div>
 
-        document.getElementById('announcementForm').reset();
-    });
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+    <script>
+        const SERVICE_ID = "service_jba30dm";     // Your EmailJS Service ID
+        const TEMPLATE_ID = "template_x637yx4";   // Your EmailJS Template ID
+        const PUBLIC_KEY = "6VQYAlxfK2n4yDvdq";   // Your EmailJS Public Key
+
+        // Initialize EmailJS
+        emailjs.init(6VQYAlxfK2n4yDvdq); 
+
+        // Fill scanned data on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
+            document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
+            document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
+            document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
+            document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
+            document.getElementById('scannedSerial').value = localStorage.getItem('serialCode') || 'No serial scanned';
+        });
+
+        // Handle form submission with EmailJS
+        document.getElementById('announcementForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const templateParams = {
+                scanned_name: document.getElementById('scannedName').value,
+                scanned_email: document.getElementById('scannedEmail').value,
+                scanned_phone: document.getElementById('scannedPhone').value,
+                scanned_id: document.getElementById('scannedID').value,
+                scanned_course: document.getElementById('scannedCourse').value,
+                scanned_serial: document.getElementById('scannedSerial').value,
+                founder_name: document.getElementById('founderName').value,
+                founder_email: document.getElementById('founderEmail').value,
+                founder_phone: document.getElementById('founderPhone').value,
+                founder_id: document.getElementById('founderID').value,
+                founder_course: document.getElementById('founderCourse').value,
+                found_time: document.getElementById('foundTime').value,
+                found_location: document.getElementById('foundLocation').value
+            };
+
+            emailjs.send(service_jba30dm, template_x637yx4, templateParams)
+                .then(function(response) {
+                    alert('Announcement has been sent successfully!');
+                }, function(error) {
+                    alert('Failed to send the announcement.');
+                    console.error('Detailed EmailJS Error:', error);
+                });
+
+            document.getElementById('announcementForm').reset();
+        });
+    </script>
+</body>
+</html>
