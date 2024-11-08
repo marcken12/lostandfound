@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
+    <title>QR Code Scanner / Reader</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,10 +16,16 @@
         }
         .container {
             text-align: center;
-        }
-        #my-qr-reader {
             width: 100%;
-            margin-bottom: 20px;
+            max-width: 500px;
+            margin: 5px;
+        }
+        .qr-scanner-container {
+            width: 350px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
         }
         .serial-code {
             font-size: 1.2em;
@@ -27,26 +33,36 @@
             color: #4CAF50;
             margin: 10px 0;
         }
-        .announce-btn {
+        .copy-btn, .announce-btn {
             padding: 10px 20px;
-            background-color: #008CBA;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
+            margin: 5px;
         }
-        .announce-btn:hover {
-            background-color: #005f77;
+        .announce-btn {
+            background-color: #008CBA;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Scan QR Code</h1>
-        <div id="my-qr-reader"></div>
-        <div class="serial-code" id="serial-code">Serial Code: ######</div>
-        <button class="announce-btn" onclick="redirectToAnnouncement()">Go to Announcement</button>
+        <div class="qr-scanner-container">
+            <div id="qr-reader"></div>
+            <div class="serial-code" id="serial-code">Serial: ######</div>
+            <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
+            <button class="announce-btn" onclick="goToAnnouncementPage()">Announce</button>
+            <div id="error-message" class="error-message"></div>
+        </div>
     </div>
 
     <!-- Include html5-qrcode library -->
@@ -57,41 +73,57 @@
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        // Store the serial code in the DOM and in localStorage
-        function setSerialCode() {
-            const serialCode = generateSerialCode();
-            document.getElementById('serial-code').textContent = "Serial Code: " + serialCode;
-            localStorage.setItem('serialCode', serialCode); // Store serial in localStorage
+        // Success callback when a QR code is scanned
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR Code scanned successfully:", decodedText);
+
+            // Generate and display a new serial code
+            const newSerialCode = generateSerialCode();
+            document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
+
+            // Store scanned data and serial code in localStorage
+            const scannedData = { data: decodedText };  // Add more properties if needed
+            localStorage.setItem('serialCode', newSerialCode);
+            localStorage.setItem('scannedData', JSON.stringify(scannedData));
+
+            // Stop the scanner after a successful scan
+            html5QrcodeScanner.clear();
         }
 
-        function onScanSuccess(decodeText, decodeResult) {
-            // Parse QR data and save it to localStorage
-            const qrData = JSON.parse(decodeText); // Assuming JSON format
-            console.log("Scanned QR Data:", qrData);
-            localStorage.setItem('scannedData', JSON.stringify(qrData)); // Store QR data in localStorage
+        // Handle QR code scan failure
+        function onScanFailure(error) {
+            console.warn(`QR Code scan failed: ${error}`);
+        }
 
-            // Set the serial code if not already generated
-            if (!localStorage.getItem('serialCode')) {
-                setSerialCode();
+        // Copy serial code to clipboard
+        function copySerialCode() {
+            const serialCode = document.getElementById('serial-code').textContent.split(': ')[1];
+            navigator.clipboard.writeText(serialCode).then(() => {
+                alert("Serial code copied to clipboard!");
+            });
+        }
+
+        // Navigate to the Announcement Page
+        function goToAnnouncementPage() {
+            window.location.href = "announcement.html"; // Ensure announcement.html exists
+        }
+
+        // Initialize the QR scanner
+        function startQrScanner() {
+            try {
+                const html5QrcodeScanner = new Html5QrcodeScanner(
+                    "qr-reader", 
+                    { fps: 10, qrbox: { width: 250, height: 250 } }
+                );
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            } catch (error) {
+                console.error("QR scanner initialization error:", error);
+                document.getElementById("error-message").textContent = "QR code library not loaded. Please check your internet connection.";
             }
         }
 
-        // Initialize QR code scanner
-        function startQrScanner() {
-            let htmlscanner = new Html5QrcodeScanner("my-qr-reader", { fps: 10, qrbox: 250 });
-            htmlscanner.render(onScanSuccess);
-        }
-
-        // Redirect to announcement page
-        function redirectToAnnouncement() {
-            window.location.href = "announcement.html";
-        }
-
-        // Start scanner and generate serial on page load
-        document.addEventListener("DOMContentLoaded", function() {
-            startQrScanner();
-            setSerialCode();
-        });
+        // Start scanner on page load
+        window.addEventListener('load', startQrScanner);
     </script>
 </body>
 </html>
