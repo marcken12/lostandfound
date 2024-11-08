@@ -3,127 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner / Reader</title>
+    <title>Announcement Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f9;
+            background-color: rgb(128 0 0 / 66%);
         }
+
         .container {
             text-align: center;
-            width: 100%;
-            max-width: 500px;
-            margin: 5px;
-        }
-        .qr-scanner-container {
-            width: 350px;
+            background: white;
             padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .serial-code {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #4CAF50;
+
+        input {
+            padding: 10px;
             margin: 10px 0;
+            width: 80%;
         }
-        .copy-btn, .announce-btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
-            margin: 5px;
         }
-        .announce-btn {
-            background-color: #008CBA;
+
+        button:hover {
+            background-color: #0056b3;
         }
-        .error-message {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 10px;
+
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Scan QR Code</h1>
-        <div class="qr-scanner-container">
-            <div id="qr-reader"></div>
-            <div class="serial-code" id="serial-code">Serial: ######</div>
-            <button class="copy-btn" onclick="copySerialCode()">Copy Serial Code</button>
-            <button class="announce-btn" onclick="goToAnnouncementPage()">Announce</button>
-            <div id="error-message" class="error-message"></div>
-        </div>
+        <h1>Announcement Form</h1>
+        <form id="announcementForm">
+            <!-- Scanned Data (Read-Only) -->
+            <input type="text" id="scannedName" placeholder="Name" disabled>
+            <input type="email" id="scannedEmail" placeholder="Email" disabled>
+            <input type="text" id="scannedPhone" placeholder="Phone" disabled>
+            <input type="text" id="scannedId" placeholder="ID" disabled>
+            <input type="text" id="scannedCourse" placeholder="Course" disabled>
+
+            <!-- Founder Data (Editable) -->
+            <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="email" id="founderEmail" placeholder="Email ng nakapulot" required>
+            <input type="text" id="founderPhone" placeholder="Phone ng nakapulot" required>
+            <input type="text" id="founderId" placeholder="ID ng nakapulot" required>
+            <input type="text" id="founderCourse" placeholder="Course ng nakapulot" required>
+
+            <button type="submit">Announce</button>
+        </form>
+
+        <!-- Link back to the main page -->
+        <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <!-- Include html5-qrcode library -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        // Function to generate a unique 6-digit serial code
-        function generateSerialCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
+        // On page load, autofill scanned data from localStorage
+        window.addEventListener('load', function() {
+            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
 
-        // Success callback when a QR code is scanned
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log("QR Code scanned successfully:", decodedText);
+            if (scannedData) {
+                const { data } = scannedData;
+                const [name, email, phone, id, course] = data.split(',');
 
-            // Generate and display a new serial code
-            const newSerialCode = generateSerialCode();
-            document.getElementById('serial-code').textContent = `Serial: ${newSerialCode}`;
-
-            // Store scanned data and serial code in localStorage
-            const scannedData = { data: decodedText };  // Add more properties if needed
-            localStorage.setItem('serialCode', newSerialCode);
-            localStorage.setItem('scannedData', JSON.stringify(scannedData));
-
-            // Stop the scanner after a successful scan
-            html5QrcodeScanner.clear();
-        }
-
-        // Handle QR code scan failure
-        function onScanFailure(error) {
-            console.warn(`QR Code scan failed: ${error}`);
-        }
-
-        // Copy serial code to clipboard
-        function copySerialCode() {
-            const serialCode = document.getElementById('serial-code').textContent.split(': ')[1];
-            navigator.clipboard.writeText(serialCode).then(() => {
-                alert("Serial code copied to clipboard!");
-            });
-        }
-
-        // Navigate to the Announcement Page
-        function goToAnnouncementPage() {
-            window.location.href = "announcement.html"; // Ensure announcement.html exists
-        }
-
-        // Initialize the QR scanner
-        function startQrScanner() {
-            try {
-                const html5QrcodeScanner = new Html5QrcodeScanner(
-                    "qr-reader", 
-                    { fps: 10, qrbox: { width: 250, height: 250 } }
-                );
-                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            } catch (error) {
-                console.error("QR scanner initialization error:", error);
-                document.getElementById("error-message").textContent = "QR code library not loaded. Please check your internet connection.";
+                document.getElementById('scannedName').value = name;
+                document.getElementById('scannedEmail').value = email;
+                document.getElementById('scannedPhone').value = phone;
+                document.getElementById('scannedId').value = id;
+                document.getElementById('scannedCourse').value = course;
             }
-        }
+        });
 
-        // Start scanner on page load
-        window.addEventListener('load', startQrScanner);
-    </script>
-</body>
-</html>
+        // Submit the form and send email
+        document.getElementById('announcementForm').addEventListener('submit', function(event) {
+            event.preventDefault
