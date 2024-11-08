@@ -5,99 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: rgb(128 0 0 / 66%);
-        }
-
-        .container {
-            text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        input {
-            padding: 10px;
-            margin: 10px 0;
-            width: 80%;
-        }
-
-        button {
-            padding: 10px;
-            margin: 5px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .back-link {
-            margin-top: 15px;
-            text-decoration: none;
-            color: #007BFF;
-            font-weight: bold;
-        }
-
-        .back-link:hover {
-            color: #0056b3;
-        }
+        /* Your existing styles */
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Announcement Form</h1>
+
+        <!-- Scanned Data Display -->
+        <div id="scannedDataSection">
+            <h2>Scanned Data:</h2>
+            <p><strong>Name:</strong> <span id="scannedName"></span></p>
+            <p><strong>Email:</strong> <span id="scannedEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="scannedPhone"></span></p>
+            <p><strong>ID:</strong> <span id="scannedID"></span></p>
+            <p><strong>Course:</strong> <span id="scannedCourse"></span></p>
+            <p><strong>Serial Code:</strong> <span id="scannedSerial"></span></p>
+        </div>
+
+        <!-- Founder Information Form -->
         <form id="announcementForm">
-            <!-- Scanned Data (Read-Only) -->
-            <input type="text" id="scannedName" placeholder="Name" disabled>
-            <input type="email" id="scannedEmail" placeholder="Email" disabled>
-            <input type="text" id="scannedPhone" placeholder="Phone" disabled>
-            <input type="text" id="scannedId" placeholder="ID" disabled>
-            <input type="text" id="scannedCourse" placeholder="Course" disabled>
-
-            <!-- Founder Data (Editable) -->
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
-            <input type="email" id="founderEmail" placeholder="Email ng nakapulot" required>
-            <input type="text" id="founderPhone" placeholder="Phone ng nakapulot" required>
-            <input type="text" id="founderId" placeholder="ID ng nakapulot" required>
-            <input type="text" id="founderCourse" placeholder="Course ng nakapulot" required>
-
+            <input type="text" id="foundTime" placeholder="Time" required>
+            <input type="text" id="foundLocation" placeholder="Saan" required>
             <button type="submit">Announce</button>
         </form>
 
-        <!-- Link back to the main page -->
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script>
-        // On page load, autofill scanned data from localStorage
+    <script type="text/javascript">
+        // Load and display scanned data on page load
         window.addEventListener('load', function() {
             const scannedData = JSON.parse(localStorage.getItem('scannedData'));
 
             if (scannedData) {
-                const { data } = scannedData;
-                const [name, email, phone, id, course] = data.split(',');
-
-                document.getElementById('scannedName').value = name;
-                document.getElementById('scannedEmail').value = email;
-                document.getElementById('scannedPhone').value = phone;
-                document.getElementById('scannedId').value = id;
-                document.getElementById('scannedCourse').value = course;
+                document.getElementById('scannedName').textContent = scannedData.name || '';
+                document.getElementById('scannedEmail').textContent = scannedData.email || '';
+                document.getElementById('scannedPhone').textContent = scannedData.phone || '';
+                document.getElementById('scannedID').textContent = scannedData.id || '';
+                document.getElementById('scannedCourse').textContent = scannedData.course || '';
+                document.getElementById('scannedSerial').textContent = scannedData.serial || '';
             }
         });
 
-        // Submit the form and send email
+        // Submit announcement form with additional data (using EmailJS as per your example)
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault
+            event.preventDefault();
+
+            const founderName = document.getElementById('founderName').value;
+            const foundTime = document.getElementById('foundTime').value;
+            const foundLocation = document.getElementById('foundLocation').value;
+            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
+
+            // Prepare announcement message
+            const announcement = `Scanned Data - Name: ${scannedData.name}, Email: ${scannedData.email}, Phone: ${scannedData.phone}, ID: ${scannedData.id}, Course: ${scannedData.course}\n` +
+                `Founder - Name: ${founderName}, Time: ${foundTime}, Location: ${foundLocation}`;
+
+            // Send data via EmailJS
+            const templateParams = {
+                founder_name: founderName,
+                found_time: foundTime,
+                found_location: foundLocation,
+                scanned_name: scannedData.name,
+                scanned_email: scannedData.email,
+                scanned_phone: scannedData.phone,
+                scanned_id: scannedData.id,
+                scanned_course: scannedData.course,
+                serial_code: scannedData.serial
+            };
+
+            emailjs.send('L9XK5kdKc8yHK48VM', 'template_6i9aagp', templateParams)
+                .then(response => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('Announcement has been sent!');
+                    document.getElementById('announcementForm').reset();
+                }, error => {
+                    console.error('FAILED...', error);
+                    alert('Failed to send announcement.');
+                });
+        });
+    </script>
+</body>
+</html>
