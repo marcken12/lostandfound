@@ -22,12 +22,14 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        input, button {
+        input {
             padding: 10px;
             margin: 10px 0;
             width: 80%;
         }
         button {
+            padding: 10px;
+            margin: 5px;
             background-color: #007BFF;
             color: white;
             border: none;
@@ -55,65 +57,70 @@
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
             <input type="text" id="foundTime" placeholder="Time" required>
             <input type="text" id="foundLocation" placeholder="Saan" required>
+
+            <!-- Hidden fields to auto-fill scanned data -->
+            <input type="hidden" id="scannedData" name="scannedData">
+            <input type="hidden" id="serialCode" name="serialCode">
+
             <button type="submit">Announce</button>
         </form>
+
+        <!-- Link back to the main page -->
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
-    <script>
-        // Initialize EmailJS
-        emailjs.init('L9XK5kdKc8yHK48VM'); // Replace with your EmailJS user ID
-
-        // Function to populate form fields with QR data
-        function populateFormWithQRData() {
-            // Get the serial and scanned data from localStorage
-            const serialCode = localStorage.getItem('serialCode');
+    <script type="text/javascript">
+        // Load scanned data and serial code from localStorage
+        window.addEventListener('load', function() {
             const scannedData = JSON.parse(localStorage.getItem('scannedData'));
+            const serialCode = localStorage.getItem('serialCode');
 
+            // Populate form fields with scanned data (if available)
             if (scannedData) {
-                document.getElementById('founderName').value = scannedData.name || '';
-                document.getElementById('foundTime').value = scannedData.time || '';
-                document.getElementById('foundLocation').value = scannedData.location || '';
+                document.getElementById('scannedData').value = scannedData.data || '';
             }
-        }
+            if (serialCode) {
+                document.getElementById('serialCode').value = serialCode;
+            }
+        });
 
-        // Handle form submission
+        // Initialize EmailJS
+        emailjs.init('YOUR_EMAILJS_USER_ID'); // Replace with your EmailJS user_id
+
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const founderName = document.getElementById('founderName').value;
             const foundTime = document.getElementById('foundTime').value;
             const foundLocation = document.getElementById('foundLocation').value;
+            const scannedData = document.getElementById('scannedData').value;
+            const serialCode = document.getElementById('serialCode').value;
 
-            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
-
+            // Create the announcement message
+            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}, QR Data: ${scannedData}, Serial Code: ${serialCode}`;
+            
+            // Send the announcement via email using EmailJS
             const templateParams = {
                 founder_name: founderName,
                 found_time: foundTime,
                 found_location: foundLocation,
-                serial_code: localStorage.getItem('serialCode'), // Include the serial code
+                scanned_data: scannedData,
+                serial_code: serialCode,
                 message: announcement,
             };
 
-            // Send via EmailJS
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            emailjs.send('YOUR_EMAILJS_SERVICE_ID', 'YOUR_EMAILJS_TEMPLATE_ID', templateParams)
                 .then(function(response) {
                     console.log('SUCCESS!', response.status, response.text);
-                    alert('Announcement has been sent to your email!');
+                    alert('Announcement has been sent!');
                 }, function(error) {
                     console.error('FAILED...', error);
                     alert('Failed to send the announcement.');
                 });
 
-            // Clear form and localStorage after submission
+            // Optionally clear the form after submission
             document.getElementById('announcementForm').reset();
-            localStorage.removeItem('serialCode');
-            localStorage.removeItem('scannedData');
         });
-
-        // Populate form when page loads
-        window.onload = populateFormWithQRData;
     </script>
 </body>
 </html>
