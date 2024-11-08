@@ -15,7 +15,6 @@
             margin: 0;
             background-color: rgb(128 0 0 / 66%);
         }
-
         .container {
             text-align: center;
             background: white;
@@ -23,13 +22,11 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         input {
             padding: 10px;
             margin: 10px 0;
             width: 80%;
         }
-
         button {
             padding: 10px;
             margin: 5px;
@@ -39,18 +36,15 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         .back-link {
             margin-top: 15px;
             text-decoration: none;
             color: #007BFF;
             font-weight: bold;
         }
-
         .back-link:hover {
             color: #0056b3;
         }
@@ -63,6 +57,7 @@
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
             <input type="text" id="foundTime" placeholder="Time" required>
             <input type="text" id="foundLocation" placeholder="Saan" required>
+            <input type="text" id="serialCode" placeholder="Serial Code" readonly>
             <button type="submit">Announce</button>
         </form>
 
@@ -70,43 +65,19 @@
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script type="text/javascript">
-        // Initialize EmailJS (You only need to do this once)
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS
         emailjs.init('L9XK5kdKc8yHK48VM'); // Replace with your EmailJS user_id
 
-        document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        // Autofill form with data from localStorage
+        function autofillForm() {
+            // Retrieve QR data and serial from localStorage
+            const qrData = JSON.parse(localStorage.getItem('scannedData'));
+            const serialCode = localStorage.getItem('serialCode');
 
-            const founderName = document.getElementById('founderName').value;
-            const foundTime = document.getElementById('foundTime').value;
-            const foundLocation = document.getElementById('foundLocation').value;
-
-            // Create announcement message
-            const announcement = `Name ng nakapulot: ${founderName}, Time: ${foundTime}, Saan: ${foundLocation}`;
-            
-            // Save the announcement in localStorage
-            localStorage.setItem('announcement', announcement);
-
-            // Send the announcement via email using EmailJS
-            const templateParams = {
-                founder_name: founderName,
-                found_time: foundTime,
-                found_location: foundLocation,
-                message: announcement,
-            };
-
-            emailjs.send('L9XK5kdKc8yHK48VM', 'template_6i9aagp', templateParams)
-                .then(function(response) {
-                    console.log('SUCCESS!', response.status, response.text);
-                    alert('Announcement has been sent to your email!');
-                }, function(error) {
-                    console.error('FAILED...', error);
-                    alert('Failed to send the announcement.');
-                });
-
-            // Optionally clear the form after submission
-            document.getElementById('announcementForm').reset();
-        });
-    </script>
-</body>
-</html>
+            // Autofill the fields if data exists
+            if (qrData) {
+                document.getElementById('founderName').value = qrData.name || '';
+                document.getElementById('foundTime').value = qrData.time || '';
+                document.getElementById('foundLocation').value = qrData.location ||
