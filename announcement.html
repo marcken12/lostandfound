@@ -5,85 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
     <style>
-        /* Your existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(128 0 0 / 66%);
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, .read-only {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+        }
+
+        .read-only {
+            background-color: #f9f9f9;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Announcement Form</h1>
-
-        <!-- Scanned Data Display -->
-        <div id="scannedDataSection">
-            <h2>Scanned Data:</h2>
-            <p><strong>Name:</strong> <span id="scannedName"></span></p>
-            <p><strong>Email:</strong> <span id="scannedEmail"></span></p>
-            <p><strong>Phone:</strong> <span id="scannedPhone"></span></p>
-            <p><strong>ID:</strong> <span id="scannedID"></span></p>
-            <p><strong>Course:</strong> <span id="scannedCourse"></span></p>
-            <p><strong>Serial Code:</strong> <span id="scannedSerial"></span></p>
+        
+        <!-- Scanned Data Section (top) -->
+        <h2>Scanned Data</h2>
+        <div>
+            <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
+            <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
+            <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
+            <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
+            <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
+            <input type="text" id="scannedSerial" class="read-only" placeholder="Scanned Serial" readonly>
         </div>
 
-        <!-- Founder Information Form -->
+        <!-- Founder Details Section (bottom) -->
+        <h2>Founder Details</h2>
         <form id="announcementForm">
+            <!-- Founder Information -->
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
+            <input type="email" id="founderEmail" placeholder="Founder Email" required>
+            <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
+            <input type="text" id="founderID" placeholder="Founder ID" required>
+            <input type="text" id="founderCourse" placeholder="Founder Course" required>
+
+            <!-- Time and Location -->
             <input type="text" id="foundTime" placeholder="Time" required>
             <input type="text" id="foundLocation" placeholder="Saan" required>
+
+            <!-- Submit Button -->
             <button type="submit">Announce</button>
         </form>
 
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script type="text/javascript">
-        // Load and display scanned data on page load
-        window.addEventListener('load', function() {
-            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS
+        emailjs.init('L9XK5kdKc8yHK48VM'); // Replace with your EmailJS user ID
 
-            if (scannedData) {
-                document.getElementById('scannedName').textContent = scannedData.name || '';
-                document.getElementById('scannedEmail').textContent = scannedData.email || '';
-                document.getElementById('scannedPhone').textContent = scannedData.phone || '';
-                document.getElementById('scannedID').textContent = scannedData.id || '';
-                document.getElementById('scannedCourse').textContent = scannedData.course || '';
-                document.getElementById('scannedSerial').textContent = scannedData.serial || '';
-            }
+        // Fill scanned data on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
+            document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
+            document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
+            document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
+            document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
+            document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
         });
 
-        // Submit announcement form with additional data (using EmailJS as per your example)
+        // Handle form submission with EmailJS
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const founderName = document.getElementById('founderName').value;
+            const founderEmail = document.getElementById('founderEmail').value;
+            const founderPhone = document.getElementById('founderPhone').value;
+            const founderID = document.getElementById('founderID').value;
+            const founderCourse = document.getElementById('founderCourse').value;
             const foundTime = document.getElementById('foundTime').value;
             const foundLocation = document.getElementById('foundLocation').value;
-            const scannedData = JSON.parse(localStorage.getItem('scannedData'));
 
-            // Prepare announcement message
-            const announcement = `Scanned Data - Name: ${scannedData.name}, Email: ${scannedData.email}, Phone: ${scannedData.phone}, ID: ${scannedData.id}, Course: ${scannedData.course}\n` +
-                `Founder - Name: ${founderName}, Time: ${foundTime}, Location: ${foundLocation}`;
-
-            // Send data via EmailJS
             const templateParams = {
+                scanned_name: document.getElementById('scannedName').value,
+                scanned_email: document.getElementById('scannedEmail').value,
+                scanned_phone: document.getElementById('scannedPhone').value,
+                scanned_id: document.getElementById('scannedID').value,
+                scanned_course: document.getElementById('scannedCourse').value,
+                scanned_serial: document.getElementById('scannedSerial').value,
                 founder_name: founderName,
+                founder_email: founderEmail,
+                founder_phone: founderPhone,
+                founder_id: founderID,
+                founder_course: founderCourse,
                 found_time: foundTime,
                 found_location: foundLocation,
-                scanned_name: scannedData.name,
-                scanned_email: scannedData.email,
-                scanned_phone: scannedData.phone,
-                scanned_id: scannedData.id,
-                scanned_course: scannedData.course,
-                serial_code: scannedData.serial
             };
 
-            emailjs.send('L9XK5kdKc8yHK48VM', 'template_6i9aagp', templateParams)
-                .then(response => {
-                    console.log('SUCCESS!', response.status, response.text);
-                    alert('Announcement has been sent!');
-                    document.getElementById('announcementForm').reset();
-                }, error => {
-                    console.error('FAILED...', error);
-                    alert('Failed to send announcement.');
+            emailjs.send('service_id', 'template_id', templateParams) // Replace with your EmailJS service and template IDs
+                .then(function(response) {
+                    alert('Announcement has been sent successfully!');
+                }, function(error) {
+                    alert('Failed to send the announcement.');
+                    console.error('Error:', error);
                 });
+
+            document.getElementById('announcementForm').reset();
         });
     </script>
 </body>
