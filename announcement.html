@@ -98,11 +98,18 @@
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+    <!-- Include the new EmailJS SDK -->
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init({
+                publicKey: "jb7Z-eVj6V-CBcvZV" // Replace with your actual EmailJS public key
+            });
+        })();
+    </script>
     <script>
-        // Initialize EmailJS with public key
-        emailjs.init('jb7Z-eVj6V-CBcvZV'); // Replace with your actual EmailJS public key
-
         // Load scanned data into inputs on page load
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
@@ -133,7 +140,7 @@
                 found_location: document.getElementById('foundLocation').value,
             };
 
-            emailjs.send('service_xi26hwu', 'template_44cu3g4', templateParams) // Replace with your service and template IDs
+            emailjs.send('service_xi26hwu', 'template_ls85336', templateParams) // Replace with your EmailJS service and template IDs
                 .then(function(response) {
                     alert('Announcement sent successfully!');
                     document.getElementById('announcementForm').reset(); // Reset form after successful submission
