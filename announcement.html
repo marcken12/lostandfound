@@ -13,38 +13,40 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: rgba(128, 0, 0, 0.66);
+            background-color: rgba(128, 0, 0, 0.8);
         }
 
         .container {
             text-align: center;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         input, .read-only {
             padding: 10px;
             margin: 10px 0;
-            width: 80%;
+            width: 90%;
             border-radius: 5px;
             border: 1px solid #ddd;
+            box-sizing: border-box;
         }
 
         .read-only {
             background-color: #f9f9f9;
-            color: #333;
+            color: #555;
         }
 
         button {
-            padding: 10px;
-            margin: 5px;
+            padding: 12px 20px;
+            margin: 10px 0;
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
@@ -67,7 +69,7 @@
     <div class="container">
         <h1>Announcement Form</h1>
 
-        <!-- Scanned Data Section (top) -->
+        <!-- Scanned Data Section -->
         <h2>Scanned Data</h2>
         <div>
             <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
@@ -78,17 +80,14 @@
             <input type="text" id="scannedSerial" class="read-only" placeholder="Scanned Serial" readonly>
         </div>
 
-        <!-- Founder Details Section (bottom) -->
+        <!-- Founder Details Section -->
         <h2>Founder Details</h2>
         <form id="announcementForm">
-            <!-- Founder Information -->
             <input type="text" id="founderName" placeholder="Name ng nakapulot" required>
             <input type="email" id="founderEmail" placeholder="Founder Email" required>
             <input type="tel" id="founderPhone" placeholder="Founder Phone" required>
             <input type="text" id="founderID" placeholder="Founder ID" required>
             <input type="text" id="founderCourse" placeholder="Founder Course" required>
-
-            <!-- Time and Location -->
             <input type="text" id="foundTime" placeholder="Time" required>
             <input type="text" id="foundLocation" placeholder="Saan" required>
 
@@ -101,10 +100,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
     <script>
-        // Initialize EmailJS
-        emailjs.init('jb7Z-eVj6V-CBcvZV'); // Replace 'YOUR_PUBLIC_KEY' with your EmailJS public key
+        // Initialize EmailJS with public key
+        emailjs.init('jb7Z-eVj6V-CBcvZV'); // Replace with your actual EmailJS public key
 
-        // Fill scanned data on page load
+        // Load scanned data into inputs on page load
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
             document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
@@ -116,7 +115,7 @@
 
         // Handle form submission with EmailJS
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent default form submission
 
             const templateParams = {
                 scanned_name: document.getElementById('scannedName').value,
@@ -134,15 +133,15 @@
                 found_location: document.getElementById('foundLocation').value,
             };
 
-            emailjs.send('service_xi26hwu', 'template_hhiwydp', templateParams) // Replace with your EmailJS service and template IDs
+            emailjs.send('service_xi26hwu', 'template_hhiwydp', templateParams) // Replace with your service and template IDs
                 .then(function(response) {
-                    alert('Announcement has been sent successfully!');
-                }, function(error) {
-                    alert('Sorry our services are down AVL: 24.0000');
-                    console.error('Error:', error);
+                    alert('Announcement sent successfully!');
+                    document.getElementById('announcementForm').reset(); // Reset form after successful submission
+                })
+                .catch(function(error) {
+                    alert('Failed to send announcement. Please try again.');
+                    console.error('EmailJS Error:', error);
                 });
-
-            document.getElementById('announcementForm').reset();
         });
     </script>
 </body>
