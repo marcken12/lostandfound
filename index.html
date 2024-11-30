@@ -120,51 +120,65 @@
   </script>
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Arial', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 400;
       background: #f4f4f9;
     }
 
     .auth-container {
       background: #ffffff;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 50px;
-      width: 400px;
+      padding: 40px 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
+      transition: all 0.3s ease;
     }
 
     .auth-container h2 {
       text-align: center;
       color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
     }
 
     .input-field {
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       border: 2px solid #ccc;
-      border-radius: 4px;
+      border-radius: 8px;
       width: 100%;
       font-size: 14px;
+      background-color: #f9f9f9;
     }
 
-    .auth-btn {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
+  .auth-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;  /* Ensure button fills container's width */
+  max-width: 250px;  /* Limit max width of the button */
+  display: block;  /* Makes it a block element, so margin auto works */
+  margin: 10px auto;  /* Horizontally center with auto margin */
+}
 
     .auth-btn:hover {
       background-color: #45a049;
@@ -184,15 +198,36 @@
     #logoutBtn {
       background-color: #ff4d4d;
       color: white;
-      padding: 10px;
+      padding: 12px;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       width: 100%;
+      font-size: 16px;
+      display: none;
     }
 
     #logoutBtn:hover {
       background-color: #e04b4b;
+    }
+
+    @media (max-width: 480px) {
+      .auth-container {
+        padding: 30px 20px;
+      }
+
+      .auth-container h2 {
+        font-size: 1.5rem;
+      }
+
+      .input-field {
+        font-size: 13px;
+        padding: 10px;
+      }
+
+      .auth-btn, #logoutBtn {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -225,7 +260,7 @@
   </div>
 
   <!-- Logout Button -->
-  <button id="logoutBtn" style="display:main.html;">Thank you for signing-up, Please sign-in again.</button>
+  <button id="logoutBtn">Thank you for signing-up, Please sign-in again.</button>
 
   <script>
     // Toggle between Sign Up and Sign In forms
