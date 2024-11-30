@@ -84,6 +84,10 @@
         <label for="course">Course:</label>
         <input type="text" id="course" placeholder="ex. BSIT" oninput="checkAndGenerateQRCode()">
     </div>
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" placeholder="09123456789" oninput="checkAndGenerateQRCode()">
+    </div>
 
     <!-- QR Code Display -->
     <img id="qr-code" alt="Generated QR Code" />
@@ -99,20 +103,22 @@
         const name = document.getElementById('name').value;
         const id = document.getElementById('id').value;
         const course = document.getElementById('course').value;
+        const phone = document.getElementById('phone').value;
 
         // Check if all fields are filled
-        if (email && name && id && course) {
-            generateQRCode(email, name, id, course);
+        if (email && name && id && course && phone) {
+            generateQRCode(email, name, id, course, phone);
         }
     }
 
-    function generateQRCode(email, name, id, course) {
+    function generateQRCode(email, name, id, course, phone) {
         // Create a JSON object with the field values
         const qrData = JSON.stringify({
             email: email,
             name: name,
             id: id,
-            course: course
+            course: course,
+            phone: phone
         });
 
         const qrCodeImg = document.getElementById('qr-code');
