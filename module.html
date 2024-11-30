@@ -107,9 +107,16 @@
     }
 
     function generateQRCode(email, name, id, course) {
-        const qrData = `Email: ${email}\nName: ${name}\nID: ${id}\nCourse: ${course}`;
+        // Create a JSON object with the field values
+        const qrData = JSON.stringify({
+            email: email,
+            name: name,
+            id: id,
+            course: course
+        });
+
         const qrCodeImg = document.getElementById('qr-code');
-        
+
         // GoQR.me API URL
         const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
 
@@ -121,7 +128,7 @@
 
     function downloadQRCode() {
         const qrCodeImg = document.getElementById('qr-code');
-        
+
         // Create a link element for downloading
         const link = document.createElement('a');
         link.href = qrCodeImg.src;
