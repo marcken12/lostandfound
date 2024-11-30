@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Firebase Authentication</title>
+  <title>Firebase Authentication</title>
 
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
+    // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAgAu5Ipx7mpBFcDOMyE-hBf4AOKio6_00",
       authDomain: "lostandfound-6235f.firebaseapp.com",
@@ -20,78 +22,147 @@
       measurementId: "G-RF3W9FP54D"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Add your authentication logic here (unchanged for brevity)
+    // Sign Up Function
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const name = document.getElementById("signupName").value;
+      const courseId = document.getElementById("signupCourseId").value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          // Save additional user information (name, course ID) in Firestore
+          setDoc(doc(db, "users", user.uid), {
+            name: name,
+            courseId: courseId,
+            email: email
+          })
+          .then(() => {
+            console.log("User data saved in Firestore.");
+            document.getElementById("signupForm").reset();
+            alert("Signup successful! Please log in.");
+          })
+          .catch((error) => {
+            console.error("Error saving user data:", error);
+            alert("Error saving user data: " + error.message);
+          });
+
+        })
+        .catch((error) => {
+          console.error("Signup error:", error.message);
+          alert(error.message);
+        });
+    });
+
+    // Sign In Function
+    document.getElementById("signinForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("signinEmail").value;
+      const password = document.getElementById("signinPassword").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("User signed in:", userCredential.user.email);
+          document.getElementById("signinForm").reset();
+          showLoggedInUI();
+          
+          // Redirect to the main page after successful login
+          window.location.href = "main.html"; // Replace 'main.html' with your actual main page URL
+        })
+        .catch((error) => {
+          console.error("Signin error:", error.message);
+          alert(error.message);
+        });
+    });
+
+    // Logout Function
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      signOut(auth).then(() => {
+        console.log("User logged out");
+        showLoggedOutUI();
+      }).catch((error) => {
+        console.error("Logout error:", error.message);
+      });
+    });
+
+    // Show UI for logged-in users
+    function showLoggedInUI() {
+      document.getElementById("authForms").style.display = "none";
+      document.getElementById("logoutBtn").style.display = "block";
+    }
+
+    // Show UI for logged-out users
+    function showLoggedOutUI() {
+      document.getElementById("authForms").style.display = "block";
+      document.getElementById("logoutBtn").style.display = "none";
+    }
+
+    // Listen for auth state changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is signed in:", user.email);
+        showLoggedInUI();
+      } else {
+        console.log("No user is signed in.");
+        showLoggedOutUI();
+      }
+    });
   </script>
 
   <style>
-    /* Base Reset */
     body {
-      margin: 0;
-      padding: 0;
       font-family: 'Arial', sans-serif;
-      background-color: #f4f4f9;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 400;
+      background: #f4f4f9;
     }
 
     .auth-container {
-      width: 90%;
-      max-width: 450px; /* Wider but not too wide */
       background: #ffffff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 50px;
+      width: 400px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      transition: all 0.3s ease-in-out;
+      gap: 15px;
     }
 
-    h2 {
-      margin: 0 0 25px;
-      font-size: 1.8rem;
-      color: #333;
+    .auth-container h2 {
       text-align: center;
-    }
-
-    .input-container {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .input-container label {
-      font-size: 1rem;
-      color: #555;
-      margin-bottom: 5px;
-      display: block;
+      color: #333;
     }
 
     .input-field {
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ccc;
+      border-radius: 4px;
       width: 100%;
-      padding: 14px; /* Make the input a little longer */
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-      background-color: #f9f9f9;
+      font-size: 14px;
     }
 
     .auth-btn {
-      width: 100%;
-      padding: 12px;
       background-color: #4CAF50;
       color: white;
-      font-size: 1rem;
-      font-weight: bold;
+      padding: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
       transition: background-color 0.3s ease;
     }
 
@@ -100,11 +171,10 @@
     }
 
     .toggle-link {
-      margin-top: 15px;
-      font-size: 0.9rem;
+      text-align: center;
+      font-size: 14px;
       color: #007bff;
       cursor: pointer;
-      text-align: center;
     }
 
     .toggle-link:hover {
@@ -112,90 +182,42 @@
     }
 
     #logoutBtn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
       background-color: #ff4d4d;
       color: white;
-      font-size: 1rem;
-      font-weight: bold;
+      padding: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      display: none;
-      transition: background-color 0.3s ease;
+      width: 100%;
     }
 
     #logoutBtn:hover {
       background-color: #e04b4b;
     }
-
-    /* Responsive Design */
-    @media (min-width: 768px) {
-      .auth-container {
-        padding: 35px;
-      }
-
-      h2 {
-        font-size: 2rem;
-      }
-
-      .input-field {
-        font-size: 1.1rem;
-      }
-
-      .auth-btn,
-      #logoutBtn {
-        font-size: 1.1rem;
-      }
-    }
-
-    @media (min-width: 1200px) {
-      .auth-container {
-        max-width: 500px; /* Slightly wider on larger screens */
-      }
-    }
   </style>
 </head>
 <body>
+
   <div id="authForms" class="auth-container">
     <!-- Sign Up Form -->
     <div id="signupSection">
       <h2>Sign Up</h2>
       <form id="signupForm">
-        <div class="input-container">
-          <label for="signupName">Full Name</label>
-          <input type="text" id="signupName" class="input-field" placeholder="Enter your full name" required>
-        </div>
-        <div class="input-container">
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" class="input-field" placeholder="Enter your email" required>
-        </div>
-        <div class="input-container">
-          <label for="signupCourseId">School ID</label>
-          <input type="text" id="signupCourseId" class="input-field" placeholder="Enter your school ID" required>
-        </div>
-        <div class="input-container">
-          <label for="signupPassword">Password</label>
-          <input type="password" id="signupPassword" class="input-field" placeholder="Enter your password" required>
-        </div>
+        <input type="text" id="signupName" class="input-field" placeholder="Full Name" required>
+        <input type="email" id="signupEmail" class="input-field" placeholder="Email" required>
+        <input type="text" id="signupCourseId" class="input-field" placeholder="School ID" required>
+        <input type="password" id="signupPassword" class="input-field" placeholder="Password" required>
         <button type="submit" class="auth-btn">Sign Up</button>
       </form>
       <div class="toggle-link" onclick="toggleAuthForm('signin')">Already have an account? Sign In</div>
     </div>
 
     <!-- Sign In Form -->
-    <div id="signinSection" style="display: none;">
+    <div id="signinSection" style="display:none;">
       <h2>Sign In</h2>
       <form id="signinForm">
-        <div class="input-container">
-          <label for="signinEmail">Email</label>
-          <input type="email" id="signinEmail" class="input-field" placeholder="Enter your email" required>
-        </div>
-        <div class="input-container">
-          <label for="signinPassword">Password</label>
-          <input type="password" id="signinPassword" class="input-field" placeholder="Enter your password" required>
-        </div>
+        <input type="email" id="signinEmail" class="input-field" placeholder="Email" required>
+        <input type="password" id="signinPassword" class="input-field" placeholder="Password" required>
         <button type="submit" class="auth-btn">Sign In</button>
       </form>
       <div class="toggle-link" onclick="toggleAuthForm('signup')">Don't have an account? Sign Up</div>
@@ -203,18 +225,20 @@
   </div>
 
   <!-- Logout Button -->
-  <button id="logoutBtn">Logout</button>
+  <button id="logoutBtn" style="display:main.html;">Thank you for signing-up, Please sign-in again.</button>
 
   <script>
+    // Toggle between Sign Up and Sign In forms
     function toggleAuthForm(formType) {
       if (formType === 'signup') {
-        document.getElementById('signupSection').style.display = 'block';
-        document.getElementById('signinSection').style.display = 'none';
+        document.getElementById("signupSection").style.display = "block";
+        document.getElementById("signinSection").style.display = "none";
       } else {
-        document.getElementById('signupSection').style.display = 'none';
-        document.getElementById('signinSection').style.display = 'block';
+        document.getElementById("signupSection").style.display = "none";
+        document.getElementById("signinSection").style.display = "block";
       }
     }
   </script>
+
 </body>
 </html>
