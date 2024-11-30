@@ -50,14 +50,13 @@
         // Initialize EmailJS
         emailjs.init("jb7Z-eVj6V-CBcvZV"); // Replace with your EmailJS public key
 
-        // Array of recipient emails (To: main recipient)
-        const recipients = ["kenmarklabog@gmail.com"]; // Main recipient email
-        // Array for BCC recipients
-        const bccRecipients = [
-            "akabanetyler@gmail.com",
+        // Array of recipient emails (To: main recipient and others)
+        const recipients = [
+            "kenmarklabog@gmail.com", 
+            "akabanetyler@gmail.com", 
             "mikepascuacolanag2004@gmail.com",
             "ramonesjohnjoshua@gmail.com"
-        ]; // BCC recipients
+        ]; // Add all emails here
 
         // Load scanned data into inputs on page load
         document.addEventListener("DOMContentLoaded", function() {
@@ -69,22 +68,19 @@
             document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
         });
 
-        // Function to send emails to multiple recipients with BCC
+        // Function to send emails to multiple recipients
         function sendEmails(templateParams) {
-            recipients.forEach((email) => {
-                templateParams.to_email = email; // Send email to primary recipient
-                // Add BCC to the email
-                templateParams.bcc_email = bccRecipients.join(","); // Join all BCC emails as a comma-separated list
+            const allRecipients = recipients.join(","); // Join all emails into a comma-separated string
+            templateParams.to_email = allRecipients; // Use `to_email` for all recipients
 
-                emailjs
-                    .send('service_xi26hwu', 'template_ls85336', templateParams) // Replace with your EmailJS service and template IDs
-                    .then(() => {
-                        console.log(`Email sent successfully to ${email}`);
-                    })
-                    .catch((error) => {
-                        console.error(`Failed to send email to ${email}:`, error);
-                    });
-            });
+            emailjs
+                .send('service_xi26hwu', 'template_ls85336', templateParams) // Replace with your EmailJS service and template IDs
+                .then(() => {
+                    console.log(`Email sent successfully to all recipients`);
+                })
+                .catch((error) => {
+                    console.error(`Failed to send email to recipients:`, error);
+                });
         }
 
         // Handle form submission
@@ -108,7 +104,7 @@
                 found_location: document.getElementById('foundLocation').value
             };
 
-            // Send emails to both the primary and BCC recipients
+            // Send emails to all recipients
             sendEmails(templateParams);
 
             alert('Announcements are being sent!');
