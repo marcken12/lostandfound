@@ -51,36 +51,11 @@
         emailjs.init("jb7Z-eVj6V-CBcvZV"); // Replace with your EmailJS public key
 
         // Array of recipient emails
-        const recipients = ["akabanetyler@gmail.com", "mikepascuacolanag2004@gmail.com", "ramonesjohnjoshua@gmail.com"]; // Add your recipient emails here
-
-        // Load scanned data into inputs on page load
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
-            document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
-            document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
-            document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
-            document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
-            document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
-        });
-
-        // Function to send emails to multiple recipients using BCC
-        function sendEmails(templateParams) {
-            // Join the email addresses and put them in the 'bcc_email' field
-            const bccEmails = recipients.join(', '); // Create a comma-separated list of emails
-
-            // Add bcc_email to the template parameters
-            templateParams.bcc_email = bccEmails;
-
-            // Send the email using EmailJS
-            emailjs
-                .send('service_xi26hwu', 'template_ls85336', templateParams) // Replace with your EmailJS service and template IDs
-                .then(() => {
-                    console.log('Emails sent successfully!');
-                })
-                .catch((error) => {
-                    console.error('Failed to send email:', error);
-                });
-        }
+        const recipients = [
+            "akabanetyler@gmail.com",
+            "mikepascuacolanag2004@gmail.com",
+            "ramonesjohnjoshua@gmail.com"
+        ];
 
         // Handle form submission
         document.getElementById('announcementForm').addEventListener('submit', function(event) {
@@ -103,8 +78,19 @@
                 found_location: document.getElementById('foundLocation').value
             };
 
-            // Send emails
-            sendEmails(templateParams);
+            // Send emails to each recipient
+            recipients.forEach((email) => {
+                templateParams.to_email = email; // Set the 'to_email' for each recipient
+
+                // Send email to each recipient
+                emailjs.send('service_xi26hwu', 'template_ls85336', templateParams)
+                    .then(() => {
+                        console.log(`Email sent successfully to ${email}`);
+                    })
+                    .catch((error) => {
+                        console.error(`Failed to send email to ${email}:`, error);
+                    });
+            });
 
             alert('Announcements are being sent!');
             document.getElementById('announcementForm').reset(); // Reset form after submission
