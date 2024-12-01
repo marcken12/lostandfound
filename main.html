@@ -3,244 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcement Form</title>
+    <title>Professional Dashboard</title>
     <style>
-        /* Global styles */
+        /* Your existing styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+
+        #report-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        /* Sidebar (Menu Drawer) */
+        .drawer {
+            width: 250px;
+            height: 100%;
+            background-color: #000000;
+            color: white;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            transition: left 0.3s ease;
+            padding-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .drawer .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 30px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .drawer ul {
+            list-style: none;
             padding: 0;
         }
 
-        /* Container */
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
+        .drawer ul li {
+            margin: 20px 0;
         }
 
-        /* Header */
-        h1 {
-            text-align: center;
-            color: #333;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: #444;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            text-align: center; /* Centralizing the section headers */
-        }
-
-        /* Form fields */
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
-            background-color: #f9f9f9;
-            color: #333;
-            transition: border 0.3s ease, background-color 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border: 1px solid #007BFF;
-            background-color: #fff;
-        }
-
-        /* Button */
-        button {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Thank-you message */
-        .thank-you-message {
-            margin-top: 20px;
-            font-size: 1.1em;
-            text-align: center;
-            color: #333;
-            padding: 10px;
-            background-color: #f0f8ff;
-            border-radius: 4px;
-        }
-
-        /* Back link */
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.1em;
-            color: #007BFF;
+        .drawer ul li a {
+            color: white;
             text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+
+        .drawer ul li a:hover,
+        .drawer ul li a.active {
+            background-color: #3b82f6;
+            border-radius: 5px;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 0;
+            padding: 20px;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            color: #1f2937;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Toggle Button */
+        .toggle-btn {
+            background-color: #1f2937;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+
+        .toggle-btn:hover {
+            background-color: #3b82f6;
+        }
+
+        /* Centered Message */
+        .centered-message {
+            margin-top: 40px;
+            font-size: 60px;
+            color: #1f2937;
             font-weight: bold;
-            transition: color 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .back-link:hover {
-            color: #0056b3;
+        /* Open Menu Drawer */
+        .open-drawer {
+            left: 0;
         }
 
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
+        .move-right {
+            margin-left: 250px;
+        }
 
-            h1 {
-                font-size: 1.7em;
-            }
-
-            h2 {
-                font-size: 1.2em;
-            }
-
-            button {
-                font-size: 1em;
-            }
-
-            .thank-you-message {
-                font-size: 1em;
-            }
-
-            .back-link {
-                font-size: 1em;
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Announcement Form</h1>
-
-        <!-- Scanned Data Section -->
-        <h2>Scanned Data</h2>
-        <div>
-            <input type="text" id="scannedName" class="read-only" placeholder="Scanned Name" readonly>
-            <input type="email" id="scannedEmail" class="read-only" placeholder="Scanned Email" readonly>
-            <input type="tel" id="scannedPhone" class="read-only" placeholder="Scanned Phone" readonly>
-            <input type="text" id="scannedID" class="read-only" placeholder="Scanned ID" readonly>
-            <input type="text" id="scannedCourse" class="read-only" placeholder="Scanned Course" readonly>
-            <input type="text" id="scannedSerial" class="read-only" placeholder="Scanned Serial" readonly>
+    
+    <!-- Sidebar / Drawer -->
+    <nav id="menu-drawer" class="drawer">
+        <div class="logo">
+            <h2>Lost and Found System</h2>
         </div>
+        <ul>
+            <li><a href="#" class="active">DASHBOARD</a></li>
+            <li><a href="generator.html">QR CODE SCANNER</a></li>
+            <li><a href="qrcodemodulescan.html">ANNOUNCEMENT</a></li>
+            <li><a href="module">QR CODE GENERATOR</a></li>
+            <li><a href="index.html" id="btnLogout">Logout</a></li>
+        </ul>
+    </nav>
 
-        <!-- Founder Details Section -->
-        <h2>Founder Details</h2>
-        <form id="announcementForm">
-            <input type="text" id="founderName" placeholder="Name of Founder(You)" required>
-            <input type="email" id="founderEmail" placeholder="Founder Email" required>
-            <input type="tel" id="founderPhone" placeholder="Founder Phone No." required>
-            <input type="text" id="founderID" placeholder="Founder ID" required>
-            <input type="text" id="founderCourse" placeholder="Founder Course" required>
-            <input type="text" id="foundTime" placeholder="Time" required>
-            <input type="text" id="foundLocation" placeholder="Where" required>
+    <!-- Main Content -->
+    <section id="main-content" class="main">
+        <header class="header">
+            <button id="toggle-btn" class="toggle-btn">☰</button>
+            <h1>Dashboard Overview</h1>
+        </header>
 
-            <!-- Submit Button -->
-            <button type="submit">Announce</button>
-        </form>
+        <div class="centered-message">
+            LOST AND FOUND SYSTEM
+        </div>
+    </section>
 
-        <!-- Thank-you Message -->
-        <p class="thank-you-message">
-            Thank you for helping out! Please drop off the found item at the Guidance/Registrar Office when you have a moment. Your kindness makes a difference!
-        </p>
-
-        <!-- Back Link -->
-        <a href="main.html" class="back-link">Go back to Main</a>
+    <div id="report-popup" style="display:none;">
+        <div class="popup-container">
+            <h2>Submitted Report</h2>
+            <div id="report-details"></div>
+            <button id="close-popup">Close</button>
+        </div>
     </div>
 
-    <!-- Include the new EmailJS SDK -->
-    <script type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
+    <!-- Firebase SDK (modular version) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 
-    <script>
-        // Initialize EmailJS
-        emailjs.init("jb7Z-eVj6V-CBcvZV"); // Replace with your EmailJS public key
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgAu5Ipx7mpBFcDOMyE-hBf4AOKio6_00",
+            authDomain: "lostandfound-6235f.firebaseapp.com",
+            projectId: "lostandfound-6235f",
+            storageBucket: "lostandfound-6235f.firebasestorage.app",
+            messagingSenderId: "227954756606",
+            appId: "1:227954756606:web:87bc6bf261a17f8b9fceaf",
+            measurementId: "G-RF3W9FP54D"
+        };
 
-        // Array of recipient emails (To: main recipient and others)
-        const recipients = [
-            "kenmarklabog@gmail.com", 
-            "akabanetyler@gmail.com", 
-            "mikepascuacolanag2004@gmail.com",
-            "ramonesjohnjoshua@gmail.com"
-        ]; // Add all emails here
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-        // Load scanned data into inputs on page load
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById('scannedName').value = localStorage.getItem('scannedName') || '';
-            document.getElementById('scannedEmail').value = localStorage.getItem('scannedEmail') || '';
-            document.getElementById('scannedPhone').value = localStorage.getItem('scannedPhone') || '';
-            document.getElementById('scannedID').value = localStorage.getItem('scannedID') || '';
-            document.getElementById('scannedCourse').value = localStorage.getItem('scannedCourse') || '';
-            document.getElementById('scannedSerial').value = localStorage.getItem('scannedSerial') || '';
+        // Authentication state listener
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html"; // Redirect if not logged in
+            } else {
+                console.log("User is authenticated:", user.email);
+            }
         });
 
-        // Function to send emails to multiple recipients
-        function sendEmails(templateParams) {
-            const allRecipients = recipients.join(","); // Join all emails into a comma-separated string
-            templateParams.to_email = allRecipients; // Use `to_email` for all recipients
-
-            emailjs
-                .send('service_xi26hwu', 'template_ls85336', templateParams) // Replace with your EmailJS service and template IDs
+        // Logout functionality
+        const btnLogout = document.getElementById('btnLogout');
+        btnLogout.addEventListener('click', () => {
+            signOut(auth)
                 .then(() => {
-                    console.log(`Email sent successfully to all recipients`);
+                    alert("You have logged out!");
+                    window.location.href = "index.html"; // Redirect to login page
                 })
-                .catch((error) => {
-                    console.error(`Failed to send email to recipients:`, error);
+                .catch((err) => {
+                    alert("Error logging out: " + err.message);
                 });
-        }
+        });
 
-        // Handle form submission
-        document.getElementById('announcementForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
+        // Toggle drawer open/close
+        const toggleBtn = document.getElementById('toggle-btn');
+        const menuDrawer = document.getElementById('menu-drawer');
+        const mainContent = document.getElementById('main-content');
 
-            // Prepare template parameters
-            const templateParams = {
-                scanned_name: document.getElementById('scannedName').value,
-                scanned_email: document.getElementById('scannedEmail').value,
-                scanned_phone: document.getElementById('scannedPhone').value,
-                scanned_id: document.getElementById('scannedID').value,
-                scanned_course: document.getElementById('scannedCourse').value,
-                scanned_serial: document.getElementById('scannedSerial').value,
-                founder_name: document.getElementById('founderName').value,
-                founder_email: document.getElementById('founderEmail').value,
-                founder_phone: document.getElementById('founderPhone').value,
-                founder_id: document.getElementById('founderID').value,
-                founder_course: document.getElementById('founderCourse').value,
-                found_time: document.getElementById('foundTime').value,
-                found_location: document.getElementById('foundLocation').value
-            };
-
-            // Send emails to all recipients
-            sendEmails(templateParams);
-
-            alert('Announcements are being sent!');
-            document.getElementById('announcementForm').reset(); // Reset form after submission
+        toggleBtn.addEventListener('click', () => {
+            menuDrawer.classList.toggle('open-drawer');
+            mainContent.classList.toggle('move-right');
         });
     </script>
+
 </body>
 </html>
