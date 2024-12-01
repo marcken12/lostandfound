@@ -5,7 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Form</title>
     <style>
-        /* Your existing CSS */
+        /* Container styling */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            color: #000;
+            font-family: Arial, sans-serif;
+            border: 1px solid #000;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #000;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            margin: 20px 0 10px;
+        }
+
+        /* Input styling */
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #000;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #fff;
+            color: #000;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+            background-color: #000;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        /* Message styling */
+        .thank-you-message {
+            margin: 15px 0;
+            font-size: 1em;
+            text-align: center;
+            color: #000;
+        }
+
+        /* Link styling */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                border-radius: 6px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            h2 {
+                font-size: 1.2em;
+            }
+
+            input {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+
+            button {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+
+            .thank-you-message {
+                font-size: 0.9em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -38,6 +152,12 @@
             <button type="submit">Announce</button>
         </form>
 
+        <!-- Thank-you Message -->
+        <p class="thank-you-message">
+            Thank you for helping out! Please drop off the found item at the Guidance/Registrar Office when you have a moment. Your kindness makes a difference!
+        </p>
+
+        <!-- Back Link -->
         <a href="main.html" class="back-link">Go back to Main</a>
     </div>
 
